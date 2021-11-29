@@ -6,6 +6,9 @@
 #include "GameFramework/Character.h"
 #include "PZ_CodingCharacter.generated.h"
 
+
+
+
 UCLASS(config=Game)
 class APZ_CodingCharacter : public ACharacter
 {
