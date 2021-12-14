@@ -8,8 +8,9 @@
 
 class UBoxComponent;
 class UMaterialInterface;
+class UStaticMeshComponent;
+class UMaterialInstanceDynamic;
 class ABasePawn;
-//DECLARE_EVENT(ASpyCameraActor, FOnChangeColor);
 
 UCLASS()
 class PZ_CODING_API ASpyCameraActor : public ACameraActor
@@ -22,22 +23,17 @@ public:
 	virtual void BeginPlay() override;
 
 	FTimerHandle ChangeColorTimer;
+	FTimerHandle OldColorTimer;
+	UStaticMeshComponent* Mesh;
+	UMaterialInterface* Material;
+	UMaterialInstanceDynamic* DynamicMaterial;
 
-	//FOnChangeColor OnChangeColor;
+	ABasePawn* BasePawn;
 
 protected:
 	UPROPERTY(VisibleAnywhere)
 		UBoxComponent* BoxComp;
-	UPROPERTY(VisibleAnywhere)
-		UStaticMeshComponent* Mesh;
-
-	UMaterialInterface* Material;
-
-	ABasePawn* BasePawn;
-
-	//(EditAnywhere)
-		//UStaticMeshComponent* MeshComp;
-
+	
 	UFUNCTION()
 		void BoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 			UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool FFromSweep, const FHitResult& SweepResult);
@@ -48,5 +44,6 @@ protected:
 
 	UFUNCTION()
 		void ChangeColor();
+
 
 };

@@ -7,8 +7,7 @@
 #include "BasePawn.h"
 #include "TimerManager.h"
 #include "Math/Color.h"
-int32 Color = 50;
-struct FLinearColor;
+
 
 ASpyCameraActor::ASpyCameraActor()
 {
@@ -19,10 +18,6 @@ ASpyCameraActor::ASpyCameraActor()
 	BoxComp->SetCollisionResponseToAllChannels(ECR_Ignore);
 	BoxComp->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 	BoxComp->SetupAttachment(GetRootComponent());
-
-	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	RootComponent = Mesh;
-
 }
 
 void ASpyCameraActor::BeginPlay()
@@ -31,56 +26,52 @@ void ASpyCameraActor::BeginPlay()
 
 	BoxComp->OnComponentBeginOverlap.AddDynamic(this, &ASpyCameraActor::BoxBeginOverlap);
 	BoxComp->OnComponentEndOverlap.AddDynamic(this, &ASpyCameraActor::BoxEndOverlap);
-
-	//OnChangeColor.AddUFunction(this, "ChangeColor");
-
 }
 
 void ASpyCameraActor::ChangeColor()
+
 {
-
-	Material = Mesh->GetMaterial(0);
-
-	UMaterialInstanceDynamic* DynamicMaterial = UMaterialInstanceDynamic::Create(Material, this);
-	Mesh->SetMaterial(0, DynamicMaterial);
-	DynamicMaterial->SetScalarParameterValue"Color",1.0f);
-	//const FLinearColor InColor;
-	//FLinearColor ReturnColor = InColor;
-	//ReturnColor.A = 6.0f;
-	//DynamicMaterial->SetScalarParameterValue(TEXT("Color"), ReturnColor.A=6.0f);
-
-	
-	//MeshComp->SetMaterial(0, DetectedMaterial);
-//	OnChangeColor.Broadcast();
-	
+	 Mesh = BasePawn->FindComponentByClass<UStaticMeshComponent>();
+	 Material = Mesh->GetMaterial(0);
+	 DynamicMaterial = UMaterialInstanceDynamic::Create(Material, nullptr);
+	 Mesh->SetMaterial(0, DynamicMaterial);
+	 DynamicMaterial->SetScalarParameterValue("ChangeColor", 1.0f);
 }
+
 
 void ASpyCameraActor::BoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool FFromSweep, const FHitResult& SweepResult)
 {
-
 	APlayerController* PC = GetWorld()->GetFirstPlayerController();
 
 	FViewTargetTransitionParams TransitionParams;
 	TransitionParams.BlendTime = 2.0f;
 	PC->SetViewTarget(this, TransitionParams);
 
-	GetWorldTimerManager().SetTimer(ChangeColorTimer, this, &ASpyCameraActor::ChangeColor, 1.0f, false);
-	
+	if ((BasePawn = Cast<ABasePawn>(OtherActor)) != nullptr)
+	{
+		GetWorldTimerManager().SetTimer(ChangeColorTimer, this, &ASpyCameraActor::ChangeColor, 5.0f, false);
+	}
 }
 
 
 void ASpyCameraActor::BoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+
 {
+	if (Cast<ABasePawn>(OtherActor))
+	{
+		BasePawn = nullptr;
+		if (GetWorldTimerManager().IsTimerActive(ChangeColorTimer))
+		{
+			GetWorldTimerManager().ClearTimer(ChangeColorTimer);
+		}
+	}
+	
 	APlayerController* PC = GetWorld()->GetFirstPlayerController();
 
 	FViewTargetTransitionParams TransitionParams;
 	TransitionParams.BlendTime = 2.0f;
-	PC->SetViewTarget(PC-> GetPawn(), TransitionParams);
-	if (GetWorldTimerManager().IsTimerActive(ChangeColorTimer))
-	{
-		GetWorldTimerManager().ClearTimer(ChangeColorTimer);
-	}
-	
+	PC->SetViewTarget(PC->GetPawn(), TransitionParams);
 }
+
