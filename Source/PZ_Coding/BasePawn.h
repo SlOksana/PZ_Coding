@@ -24,6 +24,7 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		UPawnMovementComponent* MovementComp;
 
+
 	void MoveRight(float Val);
 	void MoveForward(float Val);
 

@@ -2,6 +2,7 @@
 
 
 #include "BasePawn.h"
+
 #include "Engine/CollisionProfile.h"
 #include "GameFramework/FloatingPawnMovement.h"
 #include "Components/SphereComponent.h"
@@ -18,7 +19,10 @@ ABasePawn::ABasePawn()
 	SphereComp->SetSphereRadius(50.0f);
 	SphereComp->SetCollisionProfileName(UCollisionProfile::Pawn_ProfileName);
 	SetRootComponent(SphereComp);
-
+	//BoxComp=CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComp"));
+	//BoxComp->SetupAttachment(RootComponent);
+	//bHealth = false;
+   
 
 	MovementComp = CreateDefaultSubobject<UPawnMovementComponent, UFloatingPawnMovement>(TEXT("MovementCOmponent"));
 	MovementComp->SetUpdatedComponent(SphereComp);
@@ -28,8 +32,6 @@ ABasePawn::ABasePawn()
 void ABasePawn::BeginPlay()
 {
 	Super::BeginPlay();
-
-	
 	
 }
 
