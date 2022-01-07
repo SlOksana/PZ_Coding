@@ -1,6 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "PZ_CodingCharacter.h"
+#include "Projectile.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -9,7 +10,9 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "MainPlayerState.h"
-
+#include "Net/UnrealNetwork.h"
+#include "Engine/Engine.h"
+#include "TimerManager.h"
 //////////////////////////////////////////////////////////////////////////
 // APZ_CodingCharacter
 
@@ -44,12 +47,14 @@ APZ_CodingCharacter::APZ_CodingCharacter()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
-	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
-	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
-}
+	MaxHealth = 100.0f;
+	CurrentHealth = MaxHealth;
 
-//////////////////////////////////////////////////////////////////////////
-// Input
+	ProjectileClass = AProjectile::StaticClass();
+	FireRate = 0.25f;
+	bIsFiringWeapon = false;
+
+}
 
 void APZ_CodingCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
@@ -76,7 +81,88 @@ void APZ_CodingCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 	// VR headset functionality
 	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &APZ_CodingCharacter::OnResetVR);
 	PlayerInputComponent->BindAction("PopItem", IE_Pressed,Cast<AMainPlayerState>(GetPlayerState()), &AMainPlayerState::PopItem);
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &APZ_CodingCharacter::StartFire);
+
 }
+void APZ_CodingCharacter::GetLifetimeReplicatedProps(TArray <FLifetimeProperty> & OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	//Replicate current health.
+	DOREPLIFETIME(APZ_CodingCharacter, CurrentHealth);
+}
+void APZ_CodingCharacter::StartFire()
+{
+	if (!bIsFiringWeapon)
+	{
+		bIsFiringWeapon = true;
+		UWorld* World = GetWorld();
+		World->GetTimerManager().SetTimer(FiringTimer, this, &APZ_CodingCharacter::StopFire, FireRate, false);
+		HandleFire();
+	}
+}
+
+void APZ_CodingCharacter::StopFire()
+{
+	bIsFiringWeapon = false;
+}
+
+void APZ_CodingCharacter::OnRep_CurrentHealth()
+{
+	OnHealth_Update();
+}
+void APZ_CodingCharacter::OnHealth_Update()
+{
+	if(IsLocallyControlled())
+	{
+	   FString healthMessage=FString::Printf(TEXT("You now have %f health remaining."),CurrentHealth);
+		GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Blue,healthMessage);
+
+		if(CurrentHealth<=0)
+		{
+			FString deathMessage=FString::Printf(TEXT("You have been killed"));
+			GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Red, deathMessage);
+		}
+	}
+
+	if(GetLocalRole()==ROLE_Authority)
+	{
+		FString healthMessage=FString::Printf(TEXT("%s now have %f health remainig."), *GetFName().ToString(),CurrentHealth);
+		GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Blue, healthMessage);
+	}
+}
+
+void APZ_CodingCharacter::SetCurrentHealth(float healthValue)
+{
+	if(GetLocalRole()==ROLE_Authority)
+	{
+		CurrentHealth = FMath::Clamp(healthValue, 0.0f, MaxHealth);
+		OnHealth_Update();
+	}
+}
+
+float APZ_CodingCharacter::TakeDamage(float DamageTaken, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	float damageApplied = CurrentHealth - DamageTaken;
+	SetCurrentHealth(damageApplied);
+	return  damageApplied;
+}
+
+
+void APZ_CodingCharacter::HandleFire_Implementation()
+{
+	FVector spawnLocation = GetActorLocation() + ( GetControlRotation().Vector()  * 100.0f ) + (GetActorUpVector() * 50.0f);
+	FRotator spawnRotation = GetControlRotation();
+
+	FActorSpawnParameters spawnParameters;
+	spawnParameters.Instigator = GetInstigator();
+	spawnParameters.Owner = this;
+	AProjectile* spawnedProjectile = GetWorld()->SpawnActor<AProjectile>(spawnLocation, spawnRotation, spawnParameters);
+
+}
+//////////////////////////////////////////////////////////////////////////
+// Input
+
 
 
 void APZ_CodingCharacter::OnResetVR()
@@ -140,3 +226,5 @@ void APZ_CodingCharacter::MoveRight(float Value)
 		AddMovementInput(Direction, Value);
 	}
 }
+
+
