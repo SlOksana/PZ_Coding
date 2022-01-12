@@ -13,11 +13,20 @@
 #include "Net/UnrealNetwork.h"
 #include "Engine/Engine.h"
 #include "TimerManager.h"
+#include "Weapon.h"
+#include "Engine/SkeletalMeshSocket.h"
 //////////////////////////////////////////////////////////////////////////
 // APZ_CodingCharacter
 
 APZ_CodingCharacter::APZ_CodingCharacter()
-{
+{Weapon = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Weapon"));
+	SceneComp = CreateDefaultSubobject<USceneComponent>("Scene");
+
+	SetRootComponent(SceneComp);
+	Weapon->SetupAttachment(RootComponent);
+
+	MuzzleSocketName = "Muzzle";
+
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
@@ -151,6 +160,7 @@ float APZ_CodingCharacter::TakeDamage(float DamageTaken, FDamageEvent const& Dam
 
 void APZ_CodingCharacter::HandleFire_Implementation()
 {
+	/*
 	FVector spawnLocation = GetActorLocation() + ( GetControlRotation().Vector()  * 100.0f ) + (GetActorUpVector() * 50.0f);
 	FRotator spawnRotation = GetControlRotation();
 
@@ -158,7 +168,22 @@ void APZ_CodingCharacter::HandleFire_Implementation()
 	spawnParameters.Instigator = GetInstigator();
 	spawnParameters.Owner = this;
 	AProjectile* spawnedProjectile = GetWorld()->SpawnActor<AProjectile>(spawnLocation, spawnRotation, spawnParameters);
-
+*/
+	/*
+	USkeletalMeshSocket* Socket = Weapon->SkeletalMesh->FindSocket(MuzzleSocketName);
+	FVector spawnLocation = Socket->GetSocketLocation(Weapon) + (Socket->GetSocketTransform(Weapon).Rotator().Vector()*45.0f);
+	FRotator spawnRotation = Socket->GetSocketTransform(Weapon).Rotator();
+	FActorSpawnParameters spawnParameters;
+	spawnParameters.Instigator = GetInstigator();
+	spawnParameters.Owner = this;
+	AProjectile* spawnedProjectile = GetWorld()->SpawnActor<AProjectile>(spawnLocation, spawnRotation, spawnParameters);
+*/
+	FVector SocketLocation = Weapon->GetSocketLocation(MuzzleSocketName)+(Weapon->GetSocketTransform(MuzzleSocketName).Rotator().Vector()*50.0f);
+	FRotator SocketRotation= Weapon->GetSocketRotation(MuzzleSocketName);
+	FActorSpawnParameters spawnParameters;
+	spawnParameters.Instigator = GetInstigator();
+	spawnParameters.Owner = this;
+	AProjectile* spawnedProjectile = GetWorld()->SpawnActor<AProjectile>(SocketLocation, SocketRotation, spawnParameters);
 }
 //////////////////////////////////////////////////////////////////////////
 // Input

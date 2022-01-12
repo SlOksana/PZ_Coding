@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "InterfaceC.h"
 #include "Weapon.generated.h"
 
 UCLASS()
@@ -15,7 +16,7 @@ public:
 	// Sets default values for this actor's properties
 	AWeapon();
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite)
-	UStaticMeshComponent* Weapon;
+	USkeletalMeshComponent* Weapon;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite)
 	USceneComponent* SceneComp;
@@ -57,10 +58,10 @@ public:
 	bool CanFire();
 	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	void Reload();
+void Reload();
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	bool CanReload();
+UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+bool CanReload();
 
 	UFUNCTION(BlueprintCallable)
 	void Reloading();

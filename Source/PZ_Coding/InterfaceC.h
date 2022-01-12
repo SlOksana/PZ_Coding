@@ -22,8 +22,8 @@ class PZ_CODING_API IInterfaceC
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
+	 UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+		 void Reload();
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-		void Reload();
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	bool CanReload();
+	     bool CanReload() const;
 };

@@ -2,7 +2,7 @@
 
 
 #include "Weapon.h"
-
+#include "InterfaceC.h"
 #include "DrawDebugHelpers.h"
 #include "Components/SlateWrapperTypes.h"
 
@@ -11,7 +11,7 @@ AWeapon::AWeapon()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	Weapon = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Weapon"));
+	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Weapon"));
 	SceneComp = CreateDefaultSubobject<USceneComponent>("Scene");
 
 	SetRootComponent(SceneComp);
@@ -77,6 +77,7 @@ void AWeapon::Fire()
 		WeaponTrace();
 			
 		--CurrentAmmo;
+		UseAmmo();
 		if(CurrentAmmoClip == 0)
 		{
 			Reload_Implementation();

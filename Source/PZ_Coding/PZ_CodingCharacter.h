@@ -20,7 +20,14 @@ class APZ_CodingCharacter : public ACharacter
 	class UCameraComponent* FollowCamera;
 public:
 	APZ_CodingCharacter();
-	
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite)
+	USkeletalMeshComponent* Weapon;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite)
+	USceneComponent* SceneComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	FName MuzzleSocketName;
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
