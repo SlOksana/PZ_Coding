@@ -16,7 +16,7 @@ public:
 	// Sets default values for this actor's properties
 	AWeapon();
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite)
-	USkeletalMeshComponent* Weapon;
+	UStaticMeshComponent* WeaponMesh;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite)
 	USceneComponent* SceneComp;
@@ -72,6 +72,25 @@ bool CanReload();
 	FTimerHandle WeaponTimer;
 
 
+	UPROPERTY(EditDefaultsOnly, Category="Gameplay|Projectile")
+	TSubclassOf<class AProjectile> ProjectileClass;
+
+	UPROPERTY(EditDefaultsOnly, Category="Gameplay")
+	float FireRate;
+
+	bool bIsFiringWeapon;
+
+	UFUNCTION(BlueprintCallable, Category="Gameplay")
+	void StartFire();
+
+	UFUNCTION(BlueprintCallable, Category = "Gameplay")
+	void StopFire();  
+
+	UFUNCTION(Server, Reliable)
+	void HandleFire();
+
+	FTimerHandle FiringTimer;
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent);
 	
 protected:
 	// Called when the game starts or when spawned

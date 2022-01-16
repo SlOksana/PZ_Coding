@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Weapon.h"
 #include "PZ_CodingCharacter.generated.h"
 
 UCLASS(config=Game)
@@ -21,13 +22,24 @@ class APZ_CodingCharacter : public ACharacter
 public:
 	APZ_CodingCharacter();
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite)
-	USkeletalMeshComponent* Weapon;
+	UStaticMeshComponent* Weapon;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite)
 	USceneComponent* SceneComp;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FName MuzzleSocketName;
+
+	UPROPERTY(BlueprintReadOnly, Replicated, Category = "Weapon")
+	AWeapon* CurrentWeapon = nullptr;
+
+		
+	UPROPERTY(EditAnywhere, Category = "Weapon")
+	TSubclassOf<AWeapon> WeaponClass;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
+	FName WeaponAttachSocketName = "WeaponSocket";
+	
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
@@ -52,31 +64,38 @@ public:
 	AController* EventInstigator, AActor* DamageCauser ) override;
 
 protected:
+	virtual void BeginPlay() override;
 
+
+	
+	UPROPERTY()
+	class UChildActorComponent* WeaponComp;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Health")
 	float MaxHealth;
 
 	UPROPERTY(ReplicatedUsing=OnRep_CurrentHealth)
 	float CurrentHealth;
+	
 
-	UPROPERTY(EditDefaultsOnly, Category="Gameplay|Projectile")
-	TSubclassOf<class AProjectile> ProjectileClass;
+//	UPROPERTY(EditDefaultsOnly, Category="Gameplay|Projectile")
+//	TSubclassOf<class AProjectile> ProjectileClass;
 
-	UPROPERTY(EditDefaultsOnly, Category="Gameplay")
-	float FireRate;
+//	UPROPERTY(EditDefaultsOnly, Category="Gameplay")
+//	float FireRate;
 
-	bool bIsFiringWeapon;
+bool bIsFiringWeapon;
 
 	UFUNCTION(BlueprintCallable, Category="Gameplay")
 	void StartFire();
 
-	UFUNCTION(BlueprintCallable, Category = "Gameplay")
-	void StopFire();
+//	UFUNCTION(BlueprintCallable, Category = "Gameplay")
+//	void StopFire();
 	
-	UFUNCTION(Server, Reliable)
-	void HandleFire();
+	//UFUNCTION(Server, Reliable)
+	//void HandleFire();
 
-	FTimerHandle FiringTimer;
+	//FTimerHandle FiringTimer;
 
 
 	UFUNCTION()
