@@ -58,10 +58,10 @@ public:
 	bool CanFire();
 	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-void Reload();
+    void Reload();
 
-UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-bool CanReload();
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	bool CanReload();
 
 	UFUNCTION(BlueprintCallable)
 	void Reloading();
@@ -78,20 +78,11 @@ bool CanReload();
 	UPROPERTY(EditDefaultsOnly, Category="Gameplay")
 	float FireRate;
 
-	bool bIsFiringWeapon;
-
-	UFUNCTION(BlueprintCallable, Category="Gameplay")
-	void StartFire();
-
-	UFUNCTION(BlueprintCallable, Category = "Gameplay")
-	void StopFire();  
-
 	UFUNCTION(Server, Reliable)
 	void HandleFire();
 
 	FTimerHandle FiringTimer;
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent);
-	
+		
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

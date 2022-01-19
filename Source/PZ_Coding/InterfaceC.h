@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
+#include "InventoryComponent.h"
 #include "InterfaceC.generated.h"
 
 // This class does not need to be modified.
@@ -13,9 +14,6 @@ class UInterfaceC : public UInterface
 	GENERATED_BODY()
 };
 
-/**
- * 
- */
 class PZ_CODING_API IInterfaceC
 {
 	GENERATED_BODY()
@@ -26,4 +24,7 @@ public:
 		 void Reload();
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	     bool CanReload() const;
+
+	//virtual void Inventory()=0;
+	//virtual UInventoryComponent* GetInventory()=0;
 };

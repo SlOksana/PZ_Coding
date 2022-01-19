@@ -5,8 +5,7 @@
 #include "InterfaceC.h"
 #include "DrawDebugHelpers.h"
 #include "Projectile.h"
-#include "AVEncoder/Public/Microsoft/AVEncoderIMFSampleWrapper.h"
-#include "Components/SlateWrapperTypes.h"
+//#include "Components/SlateWrapperTypes.h"
 
 // Sets default values
 AWeapon::AWeapon()
@@ -30,29 +29,21 @@ AWeapon::AWeapon()
 	bIsReloading = false;
 	ProjectileClass = AProjectile::StaticClass();
 	FireRate = 0.25f;
-	bIsFiringWeapon = false;
-
 }
 
 // Called when the game starts or when spawned
 void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	bIsFiringWeapon = true;
-	
-	}
+}
 
 
 void AWeapon::WeaponTrace()
 {
     FVector Location;
 	FRotator Rotation;
-	//const FTransform TransformSocket = Weapon->GetSocketTransform(MuzzleSocketName);
-	// FVector StartTrace = Rotation.Vector();
 	FVector StartTrace = WeaponMesh->GetSocketLocation(MuzzleSocketName);
-	// FVector EndTrace = Location + StartTrace *Range;
-	FVector  EndTrace = WeaponMesh->GetForwardVector()  * Range +StartTrace;
+	FVector  EndTrace = GetActorForwardVector()  * Range +StartTrace;
 	DrawDebugLine(GetWorld(),StartTrace,EndTrace,FColor::Red,false,1.0f,0,0.5f );
 	FHitResult HitResult;
 	GetWorld()->LineTraceSingleByChannel(HitResult, StartTrace, EndTrace, ECollisionChannel::ECC_Visibility);
@@ -87,7 +78,7 @@ void AWeapon::Fire()
 		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Blue,
 			CurrAmmo + FString::FromInt(CurrentAmmo));
 		WeaponTrace();
-			
+		HandleFire();
 		--CurrentAmmo;
 		UseAmmo();
 		if(CurrentAmmoClip == 0)
@@ -137,31 +128,10 @@ InClip + FString::FromInt(CurrentAmmoClip));
 	bIsReloading = false;
 }
 
-void AWeapon::StartFire()
-{
-	if (!CanFire())
-	{GEngine->AddOnScreenDebugMessage(-1,2.0f,FColor::Red,"OScreen");
-		return;
-	}
-	if (!bIsFiringWeapon)
-	{
-		bIsFiringWeapon = true;
-		UWorld* World = GetWorld();
-		World->GetTimerManager().SetTimer(FiringTimer, this, &AWeapon::StopFire, FireRate, false);
-		HandleFire();
-	}
-}
-
-void AWeapon::StopFire()
-{
-	bIsFiringWeapon = false;
-}
-
 void AWeapon::HandleFire_Implementation()
 {
-	GEngine->AddOnScreenDebugMessage(-1,2.0f,FColor::Red,"OScreen");
-	FVector SocketLocation = WeaponMesh->GetSocketLocation(MuzzleSocketName)+(WeaponMesh->GetSocketTransform(MuzzleSocketName).Rotator().Vector()*100.0f);
-	FRotator SocketRotation= WeaponMesh->GetSocketRotation(MuzzleSocketName);
+	FVector SocketLocation = WeaponMesh->GetSocketLocation(MuzzleSocketName);
+	FRotator SocketRotation= GetActorRotation();
 	FActorSpawnParameters spawnParameters;
 	spawnParameters.Instigator = GetInstigator();
 	spawnParameters.Owner = this;
@@ -169,15 +139,6 @@ void AWeapon::HandleFire_Implementation()
 
 	
 }
-void AWeapon::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	check(PlayerInputComponent);
-	 
-	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AWeapon::StartFire);
-
-}
-
-
 
 // Called every frame
 void AWeapon::Tick(float DeltaTime)

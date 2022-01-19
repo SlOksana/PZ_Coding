@@ -5,10 +5,12 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Weapon.h"
+#include "InventoryInterface.h"
+//#include "InventoryComponent.h"
 #include "PZ_CodingCharacter.generated.h"
 
 UCLASS(config=Game)
-class APZ_CodingCharacter : public ACharacter
+class APZ_CodingCharacter : public ACharacter, public IInventoryInterface
 {
 	GENERATED_BODY()
 
@@ -21,26 +23,17 @@ class APZ_CodingCharacter : public ACharacter
 	class UCameraComponent* FollowCamera;
 public:
 	APZ_CodingCharacter();
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite)
-	UStaticMeshComponent* Weapon;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite)
 	USceneComponent* SceneComp;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	FName MuzzleSocketName;
-
-	UPROPERTY(BlueprintReadOnly, Replicated, Category = "Weapon")
-	AWeapon* CurrentWeapon = nullptr;
-
-		
-	UPROPERTY(EditAnywhere, Category = "Weapon")
-	TSubclassOf<AWeapon> WeaponClass;
-
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
-	FName WeaponAttachSocketName = "WeaponSocket";
 	
-	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	UPROPERTY(Category="Character", VisibleAnywhere,BlueprintReadWrite, meta=(AllowPublicAccess = "true"))
+	UInventoryComponent* InventoryComp;
+
+	//UPROPERTY(Category="Character", EditAnywhere, meta=(AllowPrivateAccess="true"));
+	//UInventoryComponent* InventoryComp;
+
+    void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
@@ -49,7 +42,10 @@ public:
 	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseLookUpRate;
-
+	
+    UFUNCTION(BlueprintCallable, BlueprintPure)
+    	bool CheckIsAndroid();
+    	
 	UFUNCTION(BlueprintPure, Category="Health")
 	FORCEINLINE float GetMaxHealth() const {return MaxHealth;}
 
@@ -58,47 +54,24 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="Health")
 	void SetCurrentHealth(float healthValue);
-
+ 
 	UFUNCTION(BlueprintCallable, Category="Health")
 	float TakeDamage(float DamageTaken, struct FDamageEvent const& DamageEvent,
 	AController* EventInstigator, AActor* DamageCauser ) override;
 
+    virtual void Inventory() override;
+	UFUNCTION(BlueprintCallable)
+	virtual UInventoryComponent* GetInventory() override;
+	
 protected:
-	virtual void BeginPlay() override;
 
-
-	
-	UPROPERTY()
-	class UChildActorComponent* WeaponComp;
-	
 	UPROPERTY(EditDefaultsOnly, Category = "Health")
 	float MaxHealth;
 
 	UPROPERTY(ReplicatedUsing=OnRep_CurrentHealth)
 	float CurrentHealth;
 	
-
-//	UPROPERTY(EditDefaultsOnly, Category="Gameplay|Projectile")
-//	TSubclassOf<class AProjectile> ProjectileClass;
-
-//	UPROPERTY(EditDefaultsOnly, Category="Gameplay")
-//	float FireRate;
-
-bool bIsFiringWeapon;
-
-	UFUNCTION(BlueprintCallable, Category="Gameplay")
-	void StartFire();
-
-//	UFUNCTION(BlueprintCallable, Category = "Gameplay")
-//	void StopFire();
-	
-	//UFUNCTION(Server, Reliable)
-	//void HandleFire();
-
-	//FTimerHandle FiringTimer;
-
-
-	UFUNCTION()
+   	UFUNCTION()
 	void OnRep_CurrentHealth();
 
 	void OnHealth_Update();

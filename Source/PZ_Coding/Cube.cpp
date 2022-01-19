@@ -1,5 +1,5 @@
 #include "Cube.h"
-#include "MovieSceneFwd.h"
+//#include "MovieSceneFwd.h"
 #include "Components/BoxComponent.h"
 
 ACube::ACube()

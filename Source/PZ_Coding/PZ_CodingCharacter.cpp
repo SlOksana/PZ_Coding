@@ -15,19 +15,10 @@
 #include "TimerManager.h"
 #include "Weapon.h"
 #include "Engine/SkeletalMeshSocket.h"
-//////////////////////////////////////////////////////////////////////////
-// APZ_CodingCharacter
+
 
 APZ_CodingCharacter::APZ_CodingCharacter()
 {
-//	Weapon = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Weapon"));
-//SceneComp = CreateDefaultSubobject<USceneComponent>("Scene");
-
-//	SetRootComponent(SceneComp);
-//	Weapon->SetupAttachment(RootComponent);
-
-	//MuzzleSocketName = "Muzzle";
-	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
 	// set our turn rates for input
@@ -58,18 +49,28 @@ APZ_CodingCharacter::APZ_CodingCharacter()
 
 	MaxHealth = 100.0f;
 	CurrentHealth = MaxHealth;
-
-	//ProjectileClass = AProjectile::StaticClass();
-	//FireRate = 0.25f;
-	bIsFiringWeapon = false;
+	APZ_CodingCharacter::Inventory();
 
 }
-void APZ_CodingCharacter::BeginPlay()
+bool APZ_CodingCharacter::CheckIsAndroid()
 {
-	Super::BeginPlay();
-	
-	// Init default weapon
+#if PLATFORM_ANDROID
+	return true;
+#endif
+	return false;
 }
+void APZ_CodingCharacter::Inventory()
+{
+	InventoryComp = CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory"));
+	//InventoryComp=CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory"));
+}
+
+UInventoryComponent* APZ_CodingCharacter::GetInventory()
+{
+	return InventoryComp;
+	
+}
+
 void APZ_CodingCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
 	// Set up gameplay key bindings
@@ -94,7 +95,7 @@ void APZ_CodingCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 
 	// VR headset functionality
 	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &APZ_CodingCharacter::OnResetVR);
-	PlayerInputComponent->BindAction("PopItem", IE_Pressed,Cast<AMainPlayerState>(GetPlayerState()), &AMainPlayerState::PopItem);
+//	PlayerInputComponent->BindAction("PopItem", IE_Pressed,Cast<AMainPlayerState>(GetPlayerState()), &AMainPlayerState::PopItem);
 	//PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &APZ_CodingCharacter::StartFire);
 
 }
@@ -106,22 +107,7 @@ void APZ_CodingCharacter::GetLifetimeReplicatedProps(TArray <FLifetimeProperty> 
 	DOREPLIFETIME(APZ_CodingCharacter, CurrentHealth);
 	
 }
-void APZ_CodingCharacter::StartFire()
-{//GEngine->AddOnScreenDebugMessage(-1,2.0f,FColor::Red,"OScreen");
-	if (!bIsFiringWeapon)
-	{
-		bIsFiringWeapon = true;
-		UWorld* World = GetWorld();
-		//World->GetTimerManager().SetTimer(FiringTimer, this, &APZ_CodingCharacter::StopFire, FireRate, false);
-		//HandleFire();
-	}
-}
-/*
-void APZ_CodingCharacter::StopFire()
-{
-	bIsFiringWeapon = false;
-}
-*/
+
 void APZ_CodingCharacter::OnRep_CurrentHealth()
 {
 	OnHealth_Update();
@@ -162,40 +148,6 @@ float APZ_CodingCharacter::TakeDamage(float DamageTaken, FDamageEvent const& Dam
 	SetCurrentHealth(damageApplied);
 	return  damageApplied;
 }
-
-/*
-void APZ_CodingCharacter::HandleFire_Implementation()
-{
-	
-	FVector spawnLocation = GetActorLocation() + ( GetControlRotation().Vector()  * 100.0f ) + (GetActorUpVector() * 50.0f);
-	FRotator spawnRotation = GetControlRotation();
-
-	FActorSpawnParameters spawnParameters;
-	spawnParameters.Instigator = GetInstigator();
-	spawnParameters.Owner = this;
-	AProjectile* spawnedProjectile = GetWorld()->SpawnActor<AProjectile>(spawnLocation, spawnRotation, spawnParameters);
-
-	
-	USkeletalMeshSocket* Socket = Weapon->SkeletalMesh->FindSocket(MuzzleSocketName);
-	FVector spawnLocation = Socket->GetSocketLocation(Weapon) + (Socket->GetSocketTransform(Weapon).Rotator().Vector()*45.0f);
-	FRotator spawnRotation = Socket->GetSocketTransform(Weapon).Rotator();
-	FActorSpawnParameters spawnParameters;
-	spawnParameters.Instigator = GetInstigator();
-	spawnParameters.Owner = this;
-	AProjectile* spawnedProjectile = GetWorld()->SpawnActor<AProjectile>(spawnLocation, spawnRotation, spawnParameters);
-
-	FVector SocketLocation = Weapon->GetSocketLocation(MuzzleSocketName)+(Weapon->GetSocketTransform(MuzzleSocketName).Rotator().Vector()*50.0f);
-	FRotator SocketRotation= Weapon->GetSocketRotation(MuzzleSocketName);
-	FActorSpawnParameters spawnParameters;
-	spawnParameters.Instigator = GetInstigator();
-	spawnParameters.Owner = this;
-	AProjectile* spawnedProjectile = GetWorld()->SpawnActor<AProjectile>(SocketLocation, SocketRotation, spawnParameters);
-}
-*/
-//////////////////////////////////////////////////////////////////////////
-// Input
-
-
 
 void APZ_CodingCharacter::OnResetVR()
 {
