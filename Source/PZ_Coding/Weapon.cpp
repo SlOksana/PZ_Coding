@@ -78,7 +78,8 @@ void AWeapon::Fire()
 		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Blue,
 			CurrAmmo + FString::FromInt(CurrentAmmo));
 		WeaponTrace();
-		HandleFire();
+		//HandleFire();
+		ServerFire();
 		--CurrentAmmo;
 		UseAmmo();
 		if(CurrentAmmoClip == 0)
@@ -90,6 +91,23 @@ void AWeapon::Fire()
 	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red,
 			InClip + FString::FromInt(CurrentAmmoClip));
 }
+
+bool AWeapon::ServerFire_Validate()
+{
+return CurrentAmmoClip>0;	
+}
+
+void AWeapon::ServerFire_Implementation()
+{
+	FVector SocketLocation = WeaponMesh->GetSocketLocation(MuzzleSocketName);
+	FRotator SocketRotation= GetActorRotation();
+	FActorSpawnParameters spawnParameters;
+	spawnParameters.Instigator = GetInstigator();
+	spawnParameters.Owner = this;
+	AProjectile* spawnedProjectile = GetWorld()->SpawnActor<AProjectile>(SocketLocation, SocketRotation, spawnParameters);
+	
+}
+
 
 bool AWeapon::CanReload_Implementation()
 {
@@ -128,7 +146,7 @@ InClip + FString::FromInt(CurrentAmmoClip));
 	bIsReloading = false;
 }
 
-void AWeapon::HandleFire_Implementation()
+/*void AWeapon::HandleFire_Implementation()
 {
 	FVector SocketLocation = WeaponMesh->GetSocketLocation(MuzzleSocketName);
 	FRotator SocketRotation= GetActorRotation();
@@ -139,7 +157,7 @@ void AWeapon::HandleFire_Implementation()
 
 	
 }
-
+*/
 // Called every frame
 void AWeapon::Tick(float DeltaTime)
 {

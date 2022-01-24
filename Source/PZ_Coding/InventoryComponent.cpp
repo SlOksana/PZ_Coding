@@ -37,12 +37,26 @@ UInventoryItem* UInventoryComponent::GetItems(const int32 Number) const
 		return Item[Number];
 	}
 }
-
+/*
 bool UInventoryComponent::AddItem(UInventoryItem* Items)
 {
 	
 	Item.Add(Items);
 	return true;
+}
+
+void UInventoryComponent::ClientAddItem_Implementation(UInventoryItem* Items)
+{
+	ClientAddItem(Items);
+}
+
+void UInventoryComponent::ServerAddItem_Implementation(UInventoryItem* Items)
+{
+Item.Add(Items);	
+}*/
+void UInventoryComponent::MulticastAddItem_Implementation(UInventoryItem* Items)
+{
+	Item.Add(Items);
 }
 
 bool UInventoryComponent::Replete()

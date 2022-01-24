@@ -53,6 +53,9 @@ public:
      
     UFUNCTION(BlueprintCallable)
     void Fire();
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerFire();
 	
 	UFUNCTION(BlueprintCallable)
 	bool CanFire();
@@ -78,8 +81,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category="Gameplay")
 	float FireRate;
 
-	UFUNCTION(Server, Reliable)
-	void HandleFire();
+//	UFUNCTION(Server, Reliable)
+//	void HandleFire();
 
 	FTimerHandle FiringTimer;
 		

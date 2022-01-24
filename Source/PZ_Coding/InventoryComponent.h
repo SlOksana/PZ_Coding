@@ -29,11 +29,19 @@ public:
 	UFUNCTION(BlueprintCallable)
 	UInventoryItem* GetItems(const int32 Number) const;
 
-	UFUNCTION(BlueprintCallable)
-	bool AddItem(UInventoryItem* Items);
+//	UFUNCTION(BlueprintCallable)
+//	bool AddItem(UInventoryItem* Items);
 
 	UFUNCTION(BlueprintCallable)
 	bool Replete();
+	
+	/*UFUNCTION(Client, Reliable)
+    	void ClientAddItem(UInventoryItem* Items);
+UFUNCTION(Server, BlueprintCallable, Reliable)
+	void ServerAddItem(UInventoryItem* Items);*/
+	UFUNCTION(NetMulticast,BlueprintCallable,Reliable)
+	void MulticastAddItem(UInventoryItem* Items);
+
 	
 protected:
 	// Called when the game starts
