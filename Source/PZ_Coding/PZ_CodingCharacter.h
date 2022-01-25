@@ -4,10 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Weapon.h"
+#include "InventoryInterface.h"
+//#include "InventoryComponent.h"
 #include "PZ_CodingCharacter.generated.h"
 
 UCLASS(config=Game)
-class APZ_CodingCharacter : public ACharacter
+class APZ_CodingCharacter : public ACharacter, public IInventoryInterface
 {
 	GENERATED_BODY()
 
@@ -21,6 +24,17 @@ class APZ_CodingCharacter : public ACharacter
 public:
 	APZ_CodingCharacter();
 
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite)
+	USceneComponent* SceneComp;
+	
+	UPROPERTY(Category="Character", VisibleAnywhere,BlueprintReadWrite, meta=(AllowPublicAccess = "true"))
+	UInventoryComponent* InventoryComp;
+
+	//UPROPERTY(Category="Character", EditAnywhere, meta=(AllowPrivateAccess="true"));
+	//UInventoryComponent* InventoryComp;
+
+    void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseTurnRate;
@@ -28,9 +42,40 @@ public:
 	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseLookUpRate;
+	
+    UFUNCTION(BlueprintCallable, BlueprintPure)
+    	bool CheckIsAndroid();
+    	
+	UFUNCTION(BlueprintPure, Category="Health")
+	FORCEINLINE float GetMaxHealth() const {return MaxHealth;}
 
+	UFUNCTION(BlueprintPure, Category="Health")
+	FORCEINLINE float GetCurrentHealth() const {return CurrentHealth;}
+
+	UFUNCTION(BlueprintCallable, Category="Health")
+	void SetCurrentHealth(float healthValue);
+ 
+	UFUNCTION(BlueprintCallable, Category="Health")
+	float TakeDamage(float DamageTaken, struct FDamageEvent const& DamageEvent,
+	AController* EventInstigator, AActor* DamageCauser ) override;
+
+    virtual void Inventory() override;
+	UFUNCTION(BlueprintCallable)
+	virtual UInventoryComponent* GetInventory() override;
+	
 protected:
 
+	UPROPERTY(EditDefaultsOnly, Category = "Health")
+	float MaxHealth;
+
+	UPROPERTY(ReplicatedUsing=OnRep_CurrentHealth)
+	float CurrentHealth;
+	
+   	UFUNCTION()
+	void OnRep_CurrentHealth();
+
+	void OnHealth_Update();
+	
 	/** Resets HMD orientation in VR. */
 	void OnResetVR();
 
