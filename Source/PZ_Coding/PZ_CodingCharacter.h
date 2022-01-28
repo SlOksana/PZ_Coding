@@ -42,10 +42,16 @@ public:
 	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseLookUpRate;
+
+	UPROPERTY(EditDefaultsOnly)
+	UAnimMontage* AnimMontageClimb;
 	
     UFUNCTION(BlueprintCallable, BlueprintPure)
     	bool CheckIsAndroid();
-    	
+
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
+	bool IsClimbing;
+	
 	UFUNCTION(BlueprintPure, Category="Health")
 	FORCEINLINE float GetMaxHealth() const {return MaxHealth;}
 
@@ -59,9 +65,28 @@ public:
 	float TakeDamage(float DamageTaken, struct FDamageEvent const& DamageEvent,
 	AController* EventInstigator, AActor* DamageCauser ) override;
 
-    virtual void Inventory() override;
+    UFUNCTION(BlueprintCallable)
+	void ForwardHeightTrace();
+	
+    UFUNCTION(Server, Unreliable)
+	void ServerForwardHeightTrace();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastClimbAnim();
+
+	
+	UFUNCTION(BlueprintCallable)
+	void ForwardTrace();
+
+	UFUNCTION(BlueprintCallable)
+	void HeightTrace();
+	
 	UFUNCTION(BlueprintCallable)
 	virtual UInventoryComponent* GetInventory() override;
+
+	virtual void Inventory() override;
+
+	virtual void Tick(float DeltaTime) override;
 	
 protected:
 
@@ -95,7 +120,7 @@ protected:
 	 * Called via input to turn look up/down at a given rate. 
 	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
 	 */
-	void LookUpAtRate(float Rate);
+     void LookUpAtRate(float Rate);
 
 	/** Handler for when a touch input begins. */
 	void TouchStarted(ETouchIndex::Type FingerIndex, FVector Location);

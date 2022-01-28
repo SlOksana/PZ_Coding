@@ -146,18 +146,6 @@ InClip + FString::FromInt(CurrentAmmoClip));
 	bIsReloading = false;
 }
 
-/*void AWeapon::HandleFire_Implementation()
-{
-	FVector SocketLocation = WeaponMesh->GetSocketLocation(MuzzleSocketName);
-	FRotator SocketRotation= GetActorRotation();
-	FActorSpawnParameters spawnParameters;
-	spawnParameters.Instigator = GetInstigator();
-	spawnParameters.Owner = this;
-	AProjectile* spawnedProjectile = GetWorld()->SpawnActor<AProjectile>(SocketLocation, SocketRotation, spawnParameters);
-
-	
-}
-*/
 // Called every frame
 void AWeapon::Tick(float DeltaTime)
 {

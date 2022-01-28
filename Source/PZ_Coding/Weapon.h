@@ -81,9 +81,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category="Gameplay")
 	float FireRate;
 
-//	UFUNCTION(Server, Reliable)
-//	void HandleFire();
-
 	FTimerHandle FiringTimer;
 		
 protected:
