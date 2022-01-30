@@ -22,9 +22,18 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 	int32 Size = 15;
-
+	
+	UPROPERTY(BlueprintReadWrite,Category="Items",EditAnywhere)
+	int32 MaxXItems;
+	UPROPERTY(BlueprintReadWrite,Category="Items",EditAnywhere)
+	int32 MaxYItems;
+	
 	UFUNCTION(BlueprintCallable)
 	TArray<UInventoryItem*>& GetItem();
+	
+	UFUNCTION(BlueprintCallable)
+	void SetItem(UInventoryItem* Items);
+	
 
 	UFUNCTION(BlueprintCallable)
 	UInventoryItem* GetItems(const int32 Number) const;

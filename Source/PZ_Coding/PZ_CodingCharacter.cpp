@@ -2,6 +2,7 @@
 
 #include "PZ_CodingCharacter.h"
 #include "Projectile.h"
+#include "WeaponManagerComponent.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -48,6 +49,8 @@ GetCharacterMovement()->JumpZVelocity = 600.f;
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+	
+	WeaponManagerComp = CreateDefaultSubobject<UWeaponManagerComponent>(TEXT("WeaponManagerComponent"));
 
 	MaxHealth = 100.0f;
 	CurrentHealth = MaxHealth;
@@ -64,7 +67,6 @@ bool APZ_CodingCharacter::CheckIsAndroid()
 void APZ_CodingCharacter::Inventory()
 {
 	InventoryComp = CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory"));
-	//InventoryComp=CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory"));
 }
 
 UInventoryComponent* APZ_CodingCharacter::GetInventory()
@@ -97,7 +99,9 @@ void APZ_CodingCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 
 	// VR headset functionality
 	//PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &APZ_CodingCharacter::OnResetVR);
-	PlayerInputComponent->BindAction("ForwardHeightTrace", IE_Pressed, this, &APZ_CodingCharacter::ForwardHeightTrace);
+//	PlayerInputComponent->BindAction("ForwardHeightTrace", IE_Pressed, this, &APZ_CodingCharacter::ForwardHeightTrace);
+	PlayerInputComponent->BindAction("Reload", IE_Pressed, WeaponManagerComp, &UWeaponManagerComponent::ReloadCurrentWeapon);
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, WeaponManagerComp, &UWeaponManagerComponent::InteractCurrentWeapon);
 
 }
 void APZ_CodingCharacter::GetLifetimeReplicatedProps(TArray <FLifetimeProperty> & OutLifetimeProps) const
@@ -161,37 +165,14 @@ float APZ_CodingCharacter::TakeDamage(float DamageTaken, FDamageEvent const& Dam
 	UHeadMountedDisplayFunctionLibrary::ResetOrientationAndPosition();
 }
 */
-void APZ_CodingCharacter::ForwardTrace()
-{
-//	const FName TraceTag("Debug");
-//	GetWorld()->DebugDrawTraceTag = TraceTag;
-	/*FHitResult ForwardT;
-	FCollisionQueryParams CollisionQueryParams;
-	//CollisionQueryParams.TraceTag = TraceTag;
-	GetWorld()->LineTraceSingleByChannel(ForwardT,GetActorLocation(),GetActorLocation()+(GetActorForwardVector()*150.0f),
-		ECC_Visibility, CollisionQueryParams);
-		GEngine->AddOnScreenDebugMessage(-1,2.0f,FColor::Cyan,"ForwardTrace");*/
-	
-}
-
-void APZ_CodingCharacter::HeightTrace()
-{
-/*	FHitResult HeightT;
-	FCollisionQueryParams CollisionQueryParams;
-	FVector StartVector = GetActorLocation()+FVector(0,0, 500) + (GetActorForwardVector()*75.0f);
-	FVector EndVector = GetActorLocation()+(GetActorForwardVector()* 75.0f);
-	GetWorld()->LineTraceSingleByChannel(HeightT,StartVector,EndVector,ECC_Visibility, CollisionQueryParams );
-	GEngine->AddOnScreenDebugMessage(-1,2.0f,FColor::Cyan,"HeightTrace");
-*/}
-
-void APZ_CodingCharacter::ForwardHeightTrace()
+/*void APZ_CodingCharacter::ForwardHeightTrace()
 {
 
 	ServerForwardHeightTrace();
 	
-}
+}/*
 
-void APZ_CodingCharacter::ServerForwardHeightTrace_Implementation()
+/*void APZ_CodingCharacter::ServerForwardHeightTrace_Implementation()
 {
 	if (IsClimbing)	{return;}
 	FHitResult ForwardT;
@@ -228,11 +209,19 @@ void APZ_CodingCharacter::ServerForwardHeightTrace_Implementation()
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 	}, AnimMontageClimb->SequenceLength, false);
 
-	}
+	}*/
 void APZ_CodingCharacter::MulticastClimbAnim_Implementation()
 {
 	float CompletedIn = PlayAnimMontage(AnimMontageClimb,1.f,NAME_None);
 }
+void APZ_CodingCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	
+}
+
+
+
 /*
 void APZ_CodingCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
 {
@@ -288,8 +277,3 @@ void APZ_CodingCharacter::MoveRight(float Value)
 		}
 	}
 }*/
-void APZ_CodingCharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-	
-}

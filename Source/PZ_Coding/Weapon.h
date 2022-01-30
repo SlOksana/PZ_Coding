@@ -21,7 +21,7 @@ public:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite)
 	USceneComponent* SceneComp;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+   UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FName MuzzleSocketName;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
@@ -36,7 +36,7 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	int32 Damage;
 
-	UPROPERTY(BlueprintReadWrite)
+     UPROPERTY(BlueprintReadWrite)
 	float ReloadDuration;
 	
 	UPROPERTY(BlueprintReadWrite)
@@ -59,6 +59,7 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	bool CanFire();
+
 	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
     void Reload();
@@ -73,22 +74,19 @@ public:
 	void UseAmmo();
 	
 	FTimerHandle WeaponTimer;
-
-
-	UPROPERTY(EditDefaultsOnly, Category="Gameplay|Projectile")
+    UPROPERTY(EditDefaultsOnly, Category="Gameplay|Projectile")
 	TSubclassOf<class AProjectile> ProjectileClass;
 
-	UPROPERTY(EditDefaultsOnly, Category="Gameplay")
-	float FireRate;
+	//UPROPERTY(EditDefaultsOnly, Category="Gameplay")
+	//float FireRate;
 
-	FTimerHandle FiringTimer;
+    // FTimerHandle FiringTimer;
 		
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
+   // virtual void IteractWeapon();
 	virtual void Tick(float DeltaTime) override;
 
 };

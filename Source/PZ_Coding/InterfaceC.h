@@ -1,10 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
 #include "InventoryComponent.h"
+#include "PZ_Coding/BaseWeapon.h"
+
 #include "InterfaceC.generated.h"
 
 // This class does not need to be modified.
@@ -20,11 +21,9 @@ class PZ_CODING_API IInterfaceC
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	 UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-		 void Reload();
+	 //UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+		virtual void Reload() = 0;
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	     bool CanReload() const;
-
-	//virtual void Inventory()=0;
-	//virtual UInventoryComponent* GetInventory()=0;
-};
+	
+	};

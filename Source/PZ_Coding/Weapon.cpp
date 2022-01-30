@@ -1,21 +1,15 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Weapon.h"
 #include "InterfaceC.h"
 #include "DrawDebugHelpers.h"
 #include "Projectile.h"
-//#include "Components/SlateWrapperTypes.h"
+//#include "Kismet/KismetSystemLibrary.h"
 
-// Sets default values
 AWeapon::AWeapon()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Weapon"));
 	SceneComp = CreateDefaultSubobject<USceneComponent>("Scene");
-
-	SetRootComponent(SceneComp);
+    SetRootComponent(SceneComp);
 	WeaponMesh->SetupAttachment(RootComponent);
 
 	MuzzleSocketName = "Muzzle";
@@ -28,7 +22,7 @@ AWeapon::AWeapon()
 	CurrentAmmoClip = 4;
 	bIsReloading = false;
 	ProjectileClass = AProjectile::StaticClass();
-	FireRate = 0.25f;
+	//FireRate = 0.25f;
 }
 
 // Called when the game starts or when spawned
@@ -53,7 +47,6 @@ void AWeapon::WeaponTrace()
 			FVector(10, 10, 10), FColor::Magenta, false, 2.0f);
 	}
 }
-
 bool AWeapon::CanFire()
 {
 	if (CurrentAmmoClip > 0)
@@ -99,7 +92,7 @@ return CurrentAmmoClip>0;
 
 void AWeapon::ServerFire_Implementation()
 {
-	FVector SocketLocation = WeaponMesh->GetSocketLocation(MuzzleSocketName);
+    FVector SocketLocation = WeaponMesh->GetSocketLocation(MuzzleSocketName);
 	FRotator SocketRotation= GetActorRotation();
 	FActorSpawnParameters spawnParameters;
 	spawnParameters.Instigator = GetInstigator();
