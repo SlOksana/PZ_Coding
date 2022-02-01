@@ -7,6 +7,9 @@
 #include "GameFramework/Actor.h"
 #include "FireWeapon.generated.h"
 
+DECLARE_DYNAMIC_DELEGATE(FInteractWeaponDynamic);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FInteractWeaponMulticast);
+
 UCLASS()
 class PZ_CODING_API AFireWeapon : public ABaseWeapon, public IInterfaceC
 {
@@ -47,13 +50,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	bool CanReload();
-	
-	//UFUNCTION(BlueprintCallable)
-   // bool CanFire();
 
-//	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-//	void Reload();
-	
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastInteractWeapon();
 	
 protected:
 	virtual void BeginPlay() override;
@@ -62,8 +61,13 @@ public:
 	UFUNCTION(Server,Unreliable)
 	virtual void Reload() override;
 	UFUNCTION(Server,Unreliable)
-	virtual void InteractWeapon() override;
+	 virtual void ServerInteractCurrentWeapon();
 	virtual bool CanStartFire();
 	virtual void Tick(float DeltaTime) override;
+
+	FInteractWeaponDynamic OnInteractWeaponDynamic;
+
+	UPROPERTY(BlueprintAssignable)
+	FInteractWeaponMulticast ONInteractWeaponMulticast;
 
 };

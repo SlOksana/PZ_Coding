@@ -91,6 +91,7 @@ protected:
 	void OnRep_CurrentHealth();
 
 	void OnHealth_Update();
+	void OnDropWeapon();
 	
 	//void OnResetVR();
 	//void MoveForward(float Value);

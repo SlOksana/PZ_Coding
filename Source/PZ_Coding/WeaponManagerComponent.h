@@ -18,7 +18,8 @@ public:
 	UWeaponManagerComponent();
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	ABaseWeapon* CurrentWeapon;
-	
+	int32 DistanceToDropWeapon;
+		
 	UFUNCTION(BlueprintCallable)
 	  bool SetCurrentWeapon(ABaseWeapon* NewWeapon);
 	
@@ -27,6 +28,9 @@ public:
 	
 	UFUNCTION(Server, Unreliable)
 	void InteractCurrentWeapon();
+
+	UFUNCTION(Server,BlueprintCallable, Unreliable)
+	void DropCurrentWeapon();
 	
 protected:
 	virtual void BeginPlay() override;

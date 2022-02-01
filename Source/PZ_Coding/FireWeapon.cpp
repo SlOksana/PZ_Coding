@@ -2,6 +2,7 @@
 #include "FireWeapon.h"
 #include "DrawDebugHelpers.h"
 #include "PZ_CodingCharacter.h"
+#include "Kismet/GameplayStatics.h"
 
 AFireWeapon::AFireWeapon()
 {
@@ -106,8 +107,18 @@ bool AFireWeapon::CanStartFire()
 	}
 	return false;
 }
-void AFireWeapon::InteractWeapon_Implementation()
+
+void AFireWeapon::MulticastInteractWeapon_Implementation()
 {
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ParticleSystem,
+			GetStaticMeshComponent()->GetSocketTransform(("Muzzle"),
+			RTS_World), true, EPSCPoolMethod::AutoRelease,
+			true);	
+}
+
+void AFireWeapon::ServerInteractCurrentWeapon_Implementation()
+{
+	ONInteractWeaponMulticast.Broadcast();
 	UE_LOG(LogTemp, Warning, TEXT("IteractWeapon"));
 	FVector LocationSocket = GetStaticMeshComponent()->GetSocketLocation("Muzzle");
 	FCollisionQueryParams RV_TraceParams;
@@ -117,6 +128,11 @@ void AFireWeapon::InteractWeapon_Implementation()
 	FVector Forward = this->GetActorForwardVector();
 	Forward = Forward * Range;
 	LocationEnd += Forward;
+	MulticastInteractWeapon();
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ParticleSystem,
+		GetStaticMeshComponent()->GetSocketTransform(("Muzzle"),
+		RTS_World), true, EPSCPoolMethod::AutoRelease,
+		true);
 	GetWorld()->LineTraceSingleByChannel(
 	   RV_Hit,
 	   LocationSocket,

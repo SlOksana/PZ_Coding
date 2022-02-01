@@ -102,6 +102,7 @@ void APZ_CodingCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 //	PlayerInputComponent->BindAction("ForwardHeightTrace", IE_Pressed, this, &APZ_CodingCharacter::ForwardHeightTrace);
 	PlayerInputComponent->BindAction("Reload", IE_Pressed, WeaponManagerComp, &UWeaponManagerComponent::ReloadCurrentWeapon);
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, WeaponManagerComp, &UWeaponManagerComponent::InteractCurrentWeapon);
+	PlayerInputComponent->BindAction("DropDownWeapon", IE_Pressed, this, &APZ_CodingCharacter::OnDropWeapon);
 
 }
 void APZ_CodingCharacter::GetLifetimeReplicatedProps(TArray <FLifetimeProperty> & OutLifetimeProps) const
@@ -136,6 +137,11 @@ void APZ_CodingCharacter::OnHealth_Update()
 		FString healthMessage=FString::Printf(TEXT("%s now have %f health remainig."), *GetFName().ToString(),CurrentHealth);
 		GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Blue, healthMessage);
 	}
+}
+
+void APZ_CodingCharacter::OnDropWeapon()
+{
+	WeaponManagerComp->DropCurrentWeapon();
 }
 
 void APZ_CodingCharacter::SetCurrentHealth(float healthValue)

@@ -1,9 +1,6 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "PistolWeapon.h"
-
 #include "FireWeapon.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 APistolWeapon::APistolWeapon()
@@ -21,7 +18,7 @@ void APistolWeapon::BeginPlay()
 }
 void APistolWeapon::InteractWeapon()
 {
-	
+	ONInteractWeaponMulticast.Broadcast();
 	if(!CanStartFire())
 	{
 		return;
@@ -30,8 +27,8 @@ void APistolWeapon::InteractWeapon()
 	ServerFire();
 	GetWorld()->GetTimerManager().
 	SetTimer(FiringTimer,this,&APistolWeapon::ServerFire,FireRate);
+	MulticastInteractWeapon();
 }
-
 void APistolWeapon::ServerFireFunction_Implementation()
 {
 	bCanFire = true;

@@ -2,12 +2,13 @@
 
 
 #include "WeaponManagerComponent.h"
-
 #include "PZ_CodingCharacter.h"
+#include "Components/BoxComponent.h"
 
 UWeaponManagerComponent::UWeaponManagerComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
+	DistanceToDropWeapon = 100.0f;
 	
 }
 
@@ -24,6 +25,7 @@ bool UWeaponManagerComponent::SetCurrentWeapon(ABaseWeapon* NewWeapon)
 	{
 		CurrentWeapon = NewWeapon;
 		auto* Character = Cast<APZ_CodingCharacter>(GetOwner());
+		CurrentWeapon->SetOwner(GetOwner());
 		CurrentWeapon->AttachToActor(Character, FAttachmentTransformRules::KeepWorldTransform, FName(TEXT("SocketWeapon")));
 		return true;
 	}
@@ -52,6 +54,23 @@ void UWeaponManagerComponent::InteractCurrentWeapon_Implementation()
 		CurrentWeapon->InteractWeapon();
 	}
 
+}
+
+void UWeaponManagerComponent::DropCurrentWeapon_Implementation()
+{
+	if(CurrentWeapon)
+	{
+		CurrentWeapon->SetOwner(nullptr);
+		CurrentWeapon->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
+		CurrentWeapon->GetBoxComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		auto* Character = Cast<APZ_CodingCharacter>(GetOwner());
+		const FVector NewLocation = Character->GetMesh()->GetRightVector() * DistanceToDropWeapon + Character->GetMesh()->GetComponentLocation();
+		FHitResult* OutSweepHitResult = nullptr;
+		CurrentWeapon->SetActorLocation(NewLocation,false,OutSweepHitResult,ETeleportType::None);
+		CurrentWeapon->DropWeapon();
+		CurrentWeapon = nullptr;
+	}
+	
 }
 
 void UWeaponManagerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

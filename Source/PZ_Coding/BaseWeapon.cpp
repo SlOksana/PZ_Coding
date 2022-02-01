@@ -31,6 +31,10 @@ void ABaseWeapon::InteractWeapon()
 {
 	
 }
+void ABaseWeapon::DropWeapon()
+{
+	
+}
 
 void ABaseWeapon::Tick(float DeltaTime)
 {
