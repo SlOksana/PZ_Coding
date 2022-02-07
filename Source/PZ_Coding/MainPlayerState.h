@@ -14,18 +14,17 @@ class PZ_CODING_API AMainPlayerState : public APlayerState
 {
 	GENERATED_BODY()
 
-public: 
-	UFUNCTION(BlueprintCallable)
-	void AddItem(AInventoryActor* NewInventoryActor);
+//	UFUNCTION(BlueprintCallable)
+//	void AddItem(AInventoryActor* NewInventoryActor);
 
-	UFUNCTION(BlueprintCallable)
-	void PopItem();
+//	UFUNCTION(BlueprintCallable)
+//	void PopItem();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<AInventoryActor*> InventoryActors;
+//	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+//	TArray<AInventoryActor*> InventoryActors;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 CountInventoryActors;
+//	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+//	int32 CountInventoryActors;
 
 	
 };
