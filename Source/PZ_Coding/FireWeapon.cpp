@@ -87,9 +87,10 @@ void AFireWeapon::ServerFire_Implementation()
 	{
 		auto* Character = Cast<APZ_CodingCharacter>(RV_Hit.GetActor());
 		if (Character)
-		{}
+		{Character->ApplyDamage();}
 		UE_LOG(LogTemp, Warning, TEXT("%s"), *RV_Hit.GetActor()->GetName());
 	}
+
 }
 bool AFireWeapon::CanReload_Implementation()
 {

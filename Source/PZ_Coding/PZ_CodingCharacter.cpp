@@ -25,18 +25,18 @@ APZ_CodingCharacter::APZ_CodingCharacter()
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
 // set our turn rates for input
-BaseTurnRate = 45.f;
-BaseLookUpRate = 45.f;
+   BaseTurnRate = 45.f;
+   BaseLookUpRate = 45.f;
 
 	// Don't rotate when the controller rotates. Let that just affect the camera.
-bUseControllerRotationPitch = false;
-bUseControllerRotationYaw = false;
-bUseControllerRotationRoll = false;
+   bUseControllerRotationPitch = false;
+   bUseControllerRotationYaw = false;
+   bUseControllerRotationRoll = false;
 
 	// Configure character movement
-GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
-GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f); // ...at this rotation rate
-GetCharacterMovement()->JumpZVelocity = 600.f;
+    GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
+    GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f); // ...at this rotation rate  
+    GetCharacterMovement()->JumpZVelocity = 600.f;
 	GetCharacterMovement()->AirControl = 0.2f;
 
 	// Create a camera boom (pulls in towards the player if there is a collision)
@@ -51,9 +51,9 @@ GetCharacterMovement()->JumpZVelocity = 600.f;
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 	
 	WeaponManagerComp = CreateDefaultSubobject<UWeaponManagerComponent>(TEXT("WeaponManagerComponent"));
-
 	MaxHealth = 100.0f;
 	CurrentHealth = MaxHealth;
+    Damage = 10.0f;
 	APZ_CodingCharacter::Inventory();
 
 }
@@ -63,6 +63,38 @@ bool APZ_CodingCharacter::CheckIsAndroid()
 	return true;
 #endif
 	return false;
+}
+void APZ_CodingCharacter::ApplyDamage()
+{
+		CurrentHealth -= Damage;
+	FString healthMessage=FString::Printf(TEXT("You now have %f health remaining."),CurrentHealth);
+	GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Blue,healthMessage);
+	if(CurrentHealth<=0)
+	{
+		FString deathMessage=FString::Printf(TEXT("You have been killed"));
+		GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Red, deathMessage);
+	CurrentHealth = 0;
+		RespawnCharacter();
+	}
+
+}
+void APZ_CodingCharacter::AddHealthClient_Implementation(float NewValue)
+{
+	AddHealthServer(NewValue);
+}
+void APZ_CodingCharacter::AddHealthServer_Implementation(float NewValue)
+{
+	CurrentHealth += NewValue;
+	CurrentHealth = FMath::Clamp(CurrentHealth, 0.0f, MaxHealth);
+	if (FMath::IsNearlyEqual(CurrentHealth, 0.0f))
+	{
+		RespawnCharacter();
+	}
+}
+void APZ_CodingCharacter::RespawnCharacter_Implementation()
+{
+	CurrentHealth = 10;
+	SetActorLocation(FVector(-40, -40, -40), false, nullptr, ETeleportType::TeleportPhysics);
 }
 void APZ_CodingCharacter::Inventory()
 {
@@ -79,27 +111,26 @@ void APZ_CodingCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 {
 	// Set up gameplay key bindings
 	check(PlayerInputComponent);
-//PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
-//	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
-
-//	PlayerInputComponent->BindAxis("MoveForward", this, &APZ_CodingCharacter::MoveForward);
-//	PlayerInputComponent->BindAxis("MoveRight", this, &APZ_CodingCharacter::MoveRight);
+    PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
+	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+	PlayerInputComponent->BindAxis("MoveForward", this, &APZ_CodingCharacter::MoveForward);
+  	PlayerInputComponent->BindAxis("MoveRight", this, &APZ_CodingCharacter::MoveRight);
 
 	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
 	// "turn" handles devices that provide an absolute delta, such as a mouse.
 	// "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
-//PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-//	PlayerInputComponent->BindAxis("TurnRate", this, &APZ_CodingCharacter::TurnAtRate);
-//	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
-//	PlayerInputComponent->BindAxis("LookUpRate", this, &APZ_CodingCharacter::LookUpAtRate);
+    PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
+   PlayerInputComponent->BindAxis("TurnRate", this, &APZ_CodingCharacter::TurnAtRate);
+	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+	PlayerInputComponent->BindAxis("LookUpRate", this, &APZ_CodingCharacter::LookUpAtRate);
 
 	// handle touch devices
-	//PlayerInputComponent->BindTouch(IE_Pressed, this, &APZ_CodingCharacter::TouchStarted);
-	//PlayerInputComponent->BindTouch(IE_Released, this, &APZ_CodingCharacter::TouchStopped);
+     PlayerInputComponent->BindTouch(IE_Pressed, this, &APZ_CodingCharacter::TouchStarted);
+	 PlayerInputComponent->BindTouch(IE_Released, this, &APZ_CodingCharacter::TouchStopped);
 
 	// VR headset functionality
-	//PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &APZ_CodingCharacter::OnResetVR);
-//	PlayerInputComponent->BindAction("ForwardHeightTrace", IE_Pressed, this, &APZ_CodingCharacter::ForwardHeightTrace);
+	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &APZ_CodingCharacter::OnResetVR);
+   // PlayerInputComponent->BindAction("ForwardHeightTrace", IE_Pressed, this, &APZ_CodingCharacter::ForwardHeightTrace);
 	PlayerInputComponent->BindAction("Reload", IE_Pressed, WeaponManagerComp, &UWeaponManagerComponent::ReloadCurrentWeapon);
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, WeaponManagerComp, &UWeaponManagerComponent::InteractCurrentWeapon);
 	PlayerInputComponent->BindAction("DropDownWeapon", IE_Pressed, this, &APZ_CodingCharacter::OnDropWeapon);
@@ -114,63 +145,19 @@ void APZ_CodingCharacter::GetLifetimeReplicatedProps(TArray <FLifetimeProperty> 
 	
 }
 
-void APZ_CodingCharacter::OnRep_CurrentHealth()
-{
-	OnHealth_Update();
-}
-void APZ_CodingCharacter::OnHealth_Update()
-{
-	if(IsLocallyControlled())
-	{
-	   FString healthMessage=FString::Printf(TEXT("You now have %f health remaining."),CurrentHealth);
-		GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Blue,healthMessage);
 
-		if(CurrentHealth<=0)
-		{
-			FString deathMessage=FString::Printf(TEXT("You have been killed"));
-			GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Red, deathMessage);
-		}
-	}
-
-	if(GetLocalRole()==ROLE_Authority)
-	{
-		FString healthMessage=FString::Printf(TEXT("%s now have %f health remainig."), *GetFName().ToString(),CurrentHealth);
-		GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Blue, healthMessage);
-	}
-}
 
 void APZ_CodingCharacter::OnDropWeapon()
 {
 	WeaponManagerComp->DropCurrentWeapon();
 }
 
-void APZ_CodingCharacter::SetCurrentHealth(float healthValue)
-{
-	if(GetLocalRole()==ROLE_Authority)
-	{
-		CurrentHealth = FMath::Clamp(healthValue, 0.0f, MaxHealth);
-		OnHealth_Update();
-	}
-}
 
-float APZ_CodingCharacter::TakeDamage(float DamageTaken, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+void APZ_CodingCharacter::OnResetVR()
 {
-	float damageApplied = CurrentHealth - DamageTaken;
-	SetCurrentHealth(damageApplied);
-	return  damageApplied;
-}
-
-/*void APZ_CodingCharacter::OnResetVR()
-{
-	// If PZ_Coding is added to a project via 'Add Feature' in the Unreal Editor the dependency on HeadMountedDisplay in PZ_Coding.Build.cs is not automatically propagated
-	// and a linker error will result.
-	// You will need to either:
-	//		Add "HeadMountedDisplay" to [YourProject].Build.cs PublicDependencyModuleNames in order to build successfully (appropriate if supporting VR).
-	// or:
-	//		Comment or delete the call to ResetOrientationAndPosition below (appropriate if not supporting VR)
 	UHeadMountedDisplayFunctionLibrary::ResetOrientationAndPosition();
 }
-*/
+
 /*void APZ_CodingCharacter::ForwardHeightTrace()
 {
 
@@ -220,15 +207,13 @@ void APZ_CodingCharacter::MulticastClimbAnim_Implementation()
 {
 	float CompletedIn = PlayAnimMontage(AnimMontageClimb,1.f,NAME_None);
 }
+
 void APZ_CodingCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
 }
 
-
-
-/*
 void APZ_CodingCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
 {
 	Jump();
@@ -282,4 +267,4 @@ void APZ_CodingCharacter::MoveRight(float Value)
 			AddMovementInput(Direction, Value);
 		}
 	}
-}*/
+}

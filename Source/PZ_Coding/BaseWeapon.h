@@ -38,7 +38,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual void DropWeapon();
 
-
 	virtual void InteractWeapon();
 	virtual void Tick(float DeltaTime) override;
 

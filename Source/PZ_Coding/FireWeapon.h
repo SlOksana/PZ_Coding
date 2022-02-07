@@ -39,13 +39,13 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	bool bIsReloading;
 	
-	UFUNCTION(Server,Unreliable)
+	UFUNCTION(NetMulticast,Unreliable)
 	void Reloading();
 	
-	UFUNCTION(Server,Unreliable)
+	UFUNCTION(NetMulticast,Unreliable)
 	void UseAmmo();
 	
-	UFUNCTION(Server,Unreliable)
+	UFUNCTION(NetMulticast,Unreliable)
 	void ServerFire();
 	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
@@ -60,8 +60,10 @@ protected:
 public:
 	UFUNCTION(Server,Unreliable)
 	virtual void Reload() override;
-	UFUNCTION(Server,Unreliable)
-	 virtual void ServerInteractCurrentWeapon();
+	
+	UFUNCTION(NetMulticast,Unreliable)
+	virtual void ServerInteractCurrentWeapon();
+	
 	virtual bool CanStartFire();
 	virtual void Tick(float DeltaTime) override;
 

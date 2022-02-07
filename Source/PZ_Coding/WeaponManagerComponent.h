@@ -26,10 +26,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ReloadCurrentWeapon();
 	
-	UFUNCTION(Server, Unreliable)
+	UFUNCTION(NetMulticast, Unreliable)
 	void InteractCurrentWeapon();
 
-	UFUNCTION(Server,BlueprintCallable, Unreliable)
+	UFUNCTION(NetMulticast,BlueprintCallable, Unreliable)
 	void DropCurrentWeapon();
 	
 protected:

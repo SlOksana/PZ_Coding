@@ -14,11 +14,11 @@ class PZ_CODING_API ARifleWeapon : public AFireWeapon
 
 public:
 	UPROPERTY(EditDefaultsOnly, Category="Gameplay")
-	float FireRate =0.25f;
+	float FireRate;
 	UPROPERTY(EditAnywhere)
-	float Duration = 100.0f;
+	float Duration;
+	int32 Lines;
 	FTimerHandle FiringTimer;
 	virtual void ServerInteractCurrentWeapon_Implementation() override;
-	//virtual bool CanStartFire() override;
 	virtual void InteractWeapon() override;
 };

@@ -23,7 +23,10 @@ void APistolWeapon::InteractWeapon()
 	{
 		return;
 	}
+	Reload();
 	UseAmmo();
+	CanReload();
+	CanStartFire();
 	ServerFire();
 	GetWorld()->GetTimerManager().
 	SetTimer(FiringTimer,this,&APistolWeapon::ServerFire,FireRate);

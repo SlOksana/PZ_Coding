@@ -33,6 +33,14 @@ public:
 	UPROPERTY(Category="Character", VisibleAnywhere,BlueprintReadWrite, meta=(AllowPublicAccess = "true"))
 	UInventoryComponent* InventoryComp;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float MaxHealth;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+	float CurrentHealth;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Damage;
+
+	
     void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
@@ -53,22 +61,22 @@ public:
 	UFUNCTION(BlueprintPure, Category="Health")
 	FORCEINLINE float GetMaxHealth() const {return MaxHealth;}
 
-	UFUNCTION(BlueprintPure, Category="Health")
-	FORCEINLINE float GetCurrentHealth() const {return CurrentHealth;}
-
-	UFUNCTION(BlueprintCallable, Category="Health")
-	void SetCurrentHealth(float healthValue);
- 
-	UFUNCTION(BlueprintCallable, Category="Health")
-	float TakeDamage(float DamageTaken, struct FDamageEvent const& DamageEvent,
-	AController* EventInstigator, AActor* DamageCauser ) override;
-
-   // UFUNCTION(BlueprintCallable)
+	   // UFUNCTION(BlueprintCallable)
 	//void ForwardHeightTrace();
 	
   //  UFUNCTION(Server, Unreliable)
 	//void ServerForwardHeightTrace();
 
+	
+	UFUNCTION(BlueprintCallable)
+	void ApplyDamage( );
+
+	UFUNCTION(Client, Unreliable)
+	void AddHealthClient(float NewValue);
+
+	UFUNCTION(Server, Unreliable)
+	void AddHealthServer(float NewValue);
+	
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastClimbAnim();
 
@@ -81,25 +89,16 @@ public:
 	
 protected:
 
-	UPROPERTY(EditDefaultsOnly, Category = "Health")
-	float MaxHealth;
-
-	UPROPERTY(ReplicatedUsing=OnRep_CurrentHealth)
-	float CurrentHealth;
-	
-   	UFUNCTION()
-	void OnRep_CurrentHealth();
-
-	void OnHealth_Update();
 	void OnDropWeapon();
-	
-	//void OnResetVR();
-	//void MoveForward(float Value);
-	//void MoveRight(float Value);
-	//void TurnAtRate(float Rate);
-	//void LookUpAtRate(float Rate);
-	//void TouchStarted(ETouchIndex::Type FingerIndex, FVector Location);
-	//void TouchStopped(ETouchIndex::Type FingerIndex, FVector Location);
+	void OnResetVR();
+	UFUNCTION(NetMulticast, Reliable)
+	void RespawnCharacter();
+	void MoveForward(float Value);
+	void MoveRight(float Value);
+	void TurnAtRate(float Rate);
+	void LookUpAtRate(float Rate);
+	void TouchStarted(ETouchIndex::Type FingerIndex, FVector Location);
+	void TouchStopped(ETouchIndex::Type FingerIndex, FVector Location);
 
 protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
