@@ -80,15 +80,14 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastClimbAnim();
 
+	void OnSetWeapon(ABaseWeapon* NewWeapon = nullptr);
+	
 	UFUNCTION(BlueprintCallable)
 	virtual UInventoryComponent* GetInventory() override;
-
 	virtual void Inventory() override;
-
 	virtual void Tick(float DeltaTime) override;
 	
 protected:
-
 	void OnDropWeapon();
 	void OnResetVR();
 	UFUNCTION(NetMulticast, Reliable)

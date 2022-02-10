@@ -2,6 +2,8 @@
 
 
 #include "Projectile.h"
+
+#include "PZ_CodingCharacter.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
@@ -34,14 +36,14 @@ AProjectile::AProjectile()
 
 
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> DefaultMesh(TEXT("/Game/StarterContent/Shapes/Shape_Sphere.Shape_Sphere"));
-	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	StaticMesh->SetupAttachment(RootComponent);
+	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	StaticMeshComponent->SetupAttachment(RootComponent);
 
 	if (DefaultMesh.Succeeded())
 	{
-		StaticMesh->SetStaticMesh(DefaultMesh.Object);
-		StaticMesh->SetRelativeLocation(FVector(0.0f, 0.0f, -12.5f));
-		StaticMesh->SetRelativeScale3D(FVector(0.25f, 0.25f, 0.25f));
+		StaticMeshComponent->SetStaticMesh(DefaultMesh.Object);
+		StaticMeshComponent->SetRelativeLocation(FVector(0.0f, 0.0f, -12.5f));
+		StaticMeshComponent->SetRelativeScale3D(FVector(0.25f, 0.25f, 0.25f));
 	}
 	
 	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
@@ -63,16 +65,20 @@ void AProjectile::BeginPlay()
 void AProjectile::OnProjectileImpact(UPrimitiveComponent* HitComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
+
 	if ( OtherActor)
 	{
 		UGameplayStatics::ApplyPointDamage(OtherActor, Damage, NormalImpulse, Hit,
 		GetInstigatorController(), this, DamageType);
+		
 	}
-
+	
 	Destroy();
 }
 void AProjectile::Destroyed()
 {
+	FHitResult RV_Hit(ForceInit);
+		//GetWorld()->SpawnActor(Projectile,&spawnLocation,&Rotation);
 	FVector spawnLocation = GetActorLocation();
 	UGameplayStatics::SpawnEmitterAtLocation(this, ExplosionEffect,
 	spawnLocation,FRotator::ZeroRotator, true, EPSCPoolMethod::AutoRelease);

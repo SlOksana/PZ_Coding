@@ -2,26 +2,30 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Components/BoxComponent.h"
 #include "InterfaceC.h"
 #include "BaseWeapon.generated.h"
 
-class UBoxComponent;
+class USphereComponent;
 UCLASS()
 class PZ_CODING_API ABaseWeapon : public AActor
 {
 	GENERATED_BODY()
+	
+	public:	
+	ABaseWeapon();
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	 UBoxComponent* BoxComponent;
+	UBoxComponent* BoxComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* StaticMeshComponent;
 
-public:	
-	ABaseWeapon();
+	UFUNCTION(BlueprintCallable)
+	UBoxComponent* GetBoxComponent()  { return  BoxComponent; }
 
 	UStaticMeshComponent* GetStaticMeshComponent() const { return  StaticMeshComponent; }
-	UBoxComponent* GetBoxComponent() const { return  BoxComponent; }
-		
+
 protected:
 	virtual void BeginPlay() override;
 

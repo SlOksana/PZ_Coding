@@ -4,11 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "BaseWeapon.h"
-#include "GameFramework/Actor.h"
+//#include "ThrowingWeapon.h"
 #include "FireWeapon.generated.h"
-
-DECLARE_DYNAMIC_DELEGATE(FInteractWeaponDynamic);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FInteractWeaponMulticast);
+//class AThrowingWeapon;
+DECLARE_DYNAMIC_DELEGATE(FInteractFireWeaponDynamic);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FInteractFireWeaponMulticast);
 
 UCLASS()
 class PZ_CODING_API AFireWeapon : public ABaseWeapon, public IInterfaceC
@@ -61,15 +61,19 @@ public:
 	UFUNCTION(Server,Unreliable)
 	virtual void Reload() override;
 	
+	
 	UFUNCTION(NetMulticast,Unreliable)
 	virtual void ServerInteractCurrentWeapon();
+	
+	//UPROPERTY(EditAnywhere,BlueprintReadWrite)
+    	//TSubclassOf<AThrowingWeapon> ProjectileClass;
 	
 	virtual bool CanStartFire();
 	virtual void Tick(float DeltaTime) override;
 
-	FInteractWeaponDynamic OnInteractWeaponDynamic;
+	FInteractFireWeaponDynamic OnInteractFireWeaponDynamic;
 
 	UPROPERTY(BlueprintAssignable)
-	FInteractWeaponMulticast ONInteractWeaponMulticast;
+	FInteractFireWeaponMulticast ONInteractFireWeaponMulticast;
 
 };

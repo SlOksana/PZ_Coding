@@ -18,7 +18,7 @@ void APistolWeapon::BeginPlay()
 }
 void APistolWeapon::InteractWeapon()
 {
-	ONInteractWeaponMulticast.Broadcast();
+	ONInteractFireWeaponMulticast.Broadcast();
 	if(!CanStartFire())
 	{
 		return;

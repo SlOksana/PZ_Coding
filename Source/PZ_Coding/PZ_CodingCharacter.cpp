@@ -94,7 +94,7 @@ void APZ_CodingCharacter::AddHealthServer_Implementation(float NewValue)
 void APZ_CodingCharacter::RespawnCharacter_Implementation()
 {
 	CurrentHealth = 10;
-	SetActorLocation(FVector(-40, -40, -40), false, nullptr, ETeleportType::TeleportPhysics);
+	SetActorLocation(FVector(-900, -290, 0), false, nullptr, ETeleportType::TeleportPhysics);
 }
 void APZ_CodingCharacter::Inventory()
 {
@@ -212,6 +212,11 @@ void APZ_CodingCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
+}
+
+void APZ_CodingCharacter::OnSetWeapon(ABaseWeapon* NewWeapon)
+{
+	WeaponManagerComp->CurrentWeapon = NewWeapon;
 }
 
 void APZ_CodingCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)

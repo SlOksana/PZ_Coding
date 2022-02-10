@@ -19,7 +19,7 @@ public:
 	class USphereComponent* SphereComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
-	class UStaticMeshComponent* StaticMesh;
+	class UStaticMeshComponent* StaticMeshComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	class UProjectileMovementComponent* ProjectileMovementComponent;

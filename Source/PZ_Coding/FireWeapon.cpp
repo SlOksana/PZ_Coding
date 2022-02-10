@@ -3,6 +3,11 @@
 #include "DrawDebugHelpers.h"
 #include "PZ_CodingCharacter.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
+#include "Engine/Engine.h"
+//#include "ThrowingWeapon.h"
+#include "TimerManager.h"
+
 
 AFireWeapon::AFireWeapon()
 {
@@ -56,32 +61,8 @@ void AFireWeapon::UseAmmo_Implementation()
 }
 
 void AFireWeapon::ServerFire_Implementation()
-{
-	FVector LocationSocket = GetStaticMeshComponent()->GetSocketLocation("Muzzle");
-	FCollisionQueryParams RV_TraceParams;
-	RV_TraceParams.bTraceComplex = true;
-	FHitResult RV_Hit(ForceInit);
-	FVector LocationEnd = LocationSocket;
-	FVector Forward = this->GetActorForwardVector();
-	Forward = Forward * Range;
-	LocationEnd += Forward;
-	GetWorld()->LineTraceSingleByChannel(
-	   RV_Hit,
-	   LocationSocket,
-	   LocationEnd,
-	   ECC_Pawn,
-	   RV_TraceParams
-	);
-	DrawDebugLine(
-	   GetWorld(),
-	   LocationSocket,
-	   LocationEnd,
-	   FColor(255, 0, 0),
-	   false,
-	   0.3,
-	   0,
-	   2
-	   );
+{ MulticastInteractWeapon();FHitResult RV_Hit(ForceInit);
+//	FVector spawnLocation = GetStaticMeshComponent()->GetSocketLocation("Muzzle");
 	
 	if (RV_Hit.bBlockingHit)
 	{
@@ -111,6 +92,7 @@ bool AFireWeapon::CanStartFire()
 
 void AFireWeapon::MulticastInteractWeapon_Implementation()
 {
+	ServerInteractCurrentWeapon();
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ParticleSystem,
 			GetStaticMeshComponent()->GetSocketTransform(("Muzzle"),
 			RTS_World), true, EPSCPoolMethod::AutoRelease,
@@ -119,38 +101,9 @@ void AFireWeapon::MulticastInteractWeapon_Implementation()
 
 void AFireWeapon::ServerInteractCurrentWeapon_Implementation()
 {
-	ONInteractWeaponMulticast.Broadcast();
+	
+	ONInteractFireWeaponMulticast.Broadcast();
 	UE_LOG(LogTemp, Warning, TEXT("IteractWeapon"));
-	FVector LocationSocket = GetStaticMeshComponent()->GetSocketLocation("Muzzle");
-	FCollisionQueryParams RV_TraceParams;
-	RV_TraceParams.bTraceComplex = true;
-	FHitResult RV_Hit(ForceInit);
-	FVector LocationEnd = LocationSocket;
-	FVector Forward = this->GetActorForwardVector();
-	Forward = Forward * Range;
-	LocationEnd += Forward;
-	MulticastInteractWeapon();
-	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ParticleSystem,
-		GetStaticMeshComponent()->GetSocketTransform(("Muzzle"),
-		RTS_World), true, EPSCPoolMethod::AutoRelease,
-		true);
-	GetWorld()->LineTraceSingleByChannel(
-	   RV_Hit,
-	   LocationSocket,
-	   LocationEnd,
-	   ECC_Pawn,
-	   RV_TraceParams
-	);
-	DrawDebugLine(
-	   GetWorld(),
-	   LocationSocket,
-	   LocationEnd,
-	   FColor(255, 0, 0),
-	   false,
-	   0.3,
-	   0,
-	   2
-	   );
 	
 	if(!CanStartFire())
 	{
