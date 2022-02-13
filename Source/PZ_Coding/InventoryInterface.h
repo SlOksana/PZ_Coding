@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/Interface.h"
 #include "InventoryComponent.h"
+#include "UObject/Interface.h"
 #include "InventoryInterface.generated.h"
 
 // This class does not need to be modified.
@@ -14,9 +14,6 @@ class UInventoryInterface : public UInterface
 	GENERATED_BODY()
 };
 
-/**
- * 
- */
 class PZ_CODING_API IInventoryInterface
 {
 	GENERATED_BODY()

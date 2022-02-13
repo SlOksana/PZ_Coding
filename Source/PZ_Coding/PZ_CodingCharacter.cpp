@@ -1,5 +1,3 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
-
 #include "PZ_CodingCharacter.h"
 #include "Projectile.h"
 #include "WeaponManagerComponent.h"
@@ -18,7 +16,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Engine/SkeletalMeshSocket.h"
-
+#include "InventoryComponent.h"
 
 APZ_CodingCharacter::APZ_CodingCharacter()
 {
@@ -64,6 +62,21 @@ bool APZ_CodingCharacter::CheckIsAndroid()
 #endif
 	return false;
 }
+
+void APZ_CodingCharacter::DropItem()
+{
+	if(InventoryComp)
+	InventoryComp->DropFirstItem();
+}
+
+void APZ_CodingCharacter::UseItem()
+{
+	if(InventoryComp)
+	{
+		InventoryComp->UseFirstItem();
+	}
+}
+
 void APZ_CodingCharacter::ApplyDamage()
 {
 		CurrentHealth -= Damage;
@@ -134,6 +147,8 @@ void APZ_CodingCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 	PlayerInputComponent->BindAction("Reload", IE_Pressed, WeaponManagerComp, &UWeaponManagerComponent::ReloadCurrentWeapon);
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, WeaponManagerComp, &UWeaponManagerComponent::InteractCurrentWeapon);
 	PlayerInputComponent->BindAction("DropDownWeapon", IE_Pressed, this, &APZ_CodingCharacter::OnDropWeapon);
+	PlayerInputComponent->BindAction("DropItem", IE_Pressed, this, &APZ_CodingCharacter::DropItem);
+	PlayerInputComponent->BindAction("UseItem", IE_Pressed, this, APZ_CodingCharacter::UseItem);
 
 }
 void APZ_CodingCharacter::GetLifetimeReplicatedProps(TArray <FLifetimeProperty> & OutLifetimeProps) const

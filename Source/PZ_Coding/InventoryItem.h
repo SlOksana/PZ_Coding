@@ -1,27 +1,36 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
+#include "PZ_CodingCharacter.h"
+#include "Components/BoxComponent.h"
 #include "InventoryItem.generated.h"
 
-/**
- * 
- */
 UCLASS(Blueprintable)
-class PZ_CODING_API UInventoryItem : public UObject
+class PZ_CODING_API AInventoryItem : public AActor
 {
-	public:
 	GENERATED_BODY()
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly,meta=(AllowPrivateAccess = " true"))
+	UStaticMeshComponent* StaticMesh;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly,meta=(AllowPrivateAccess = " true"))
+	UBoxComponent* BoxCollision;
+	
+public:
+	AInventoryItem();
 	
 	UPROPERTY(BlueprintReadWrite)
 	FName Name;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float DistanceDrop;
+	
 	UPROPERTY(BlueprintReadWrite)
 	UTexture2D* Icon;
 
-	UInventoryItem();
-	explicit UInventoryItem(FName Name);
+	
+	
+	virtual void InteractItem(APZ_CodingCharacter* Character );
+	explicit AInventoryItem(FName Name);
 	
 };

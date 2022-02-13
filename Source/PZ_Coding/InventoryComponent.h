@@ -18,7 +18,7 @@ public:
 	UInventoryComponent();
 
 	 UPROPERTY(EditAnywhere)
-	TArray<UInventoryItem*> Item;
+	TArray<AInventoryItem*> Item;
 
 	UPROPERTY(BlueprintReadWrite)
 	int32 Size = 15;
@@ -29,15 +29,30 @@ public:
 	int32 MaxYItems;
 	
 	UFUNCTION(BlueprintCallable)
-	TArray<UInventoryItem*>& GetItem();
+	TArray<AInventoryItem*>& GetItem();
 	
 	UFUNCTION(BlueprintCallable)
-	void SetItem(UInventoryItem* Items);
+	void SetItem(AInventoryItem* Items);
 	
 
 	UFUNCTION(BlueprintCallable)
-	UInventoryItem* GetItems(const int32 Number) const;
+	AInventoryItem* GetItems(const int32 Number) const;
 
+	UFUNCTION(BlueprintCallable)
+	void AddItem(TSubclassOf<AInventoryItem> NewItem, int32 CountItem);
+
+	UFUNCTION(BlueprintCallable)
+	bool UseItem(TSubclassOf<AInventoryItem> SelectItem);
+
+	UFUNCTION(BlueprintCallable)
+	void UseFirstItem();
+
+	UFUNCTION(BlueprintCallable)
+	void DropItem(TSubclassOf<AInventoryItem> SelectItem, int32 CountItem);
+
+	UFUNCTION(BlueprintCallable)
+	void DropFirstItem();
+	
 //	UFUNCTION(BlueprintCallable)
 //	bool AddItem(UInventoryItem* Items);
 
@@ -49,7 +64,7 @@ public:
 UFUNCTION(Server, BlueprintCallable, Reliable)
 	void ServerAddItem(UInventoryItem* Items);*/
 	UFUNCTION(NetMulticast,BlueprintCallable,Reliable)
-	void MulticastAddItem(UInventoryItem* Items);
+	void MulticastAddItem(AInventoryItem* Items);
 
 	
 protected:
@@ -60,5 +75,6 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-		
+private:
+	TMap<TSubclassOf<AInventoryItem>, int32> MapItem;
 };

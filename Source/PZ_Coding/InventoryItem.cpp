@@ -1,11 +1,23 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "InventoryItem.h"
+#include "Components/BoxComponent.h"
 
-UInventoryItem::UInventoryItem(){}
 
-UInventoryItem::UInventoryItem(FName Name)
+AInventoryItem::AInventoryItem()
+{
+	DistanceDrop = 300.0f;
+	BoxCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxCollision"));
+	SetRootComponent(BoxCollision);
+	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMrsh"));
+	USceneComponent* GetRootComponent = nullptr;
+	StaticMesh->SetupAttachment(GetRootComponent);
+	
+}
+
+void AInventoryItem::InteractItem(APZ_CodingCharacter* Character)
+{
+}
+
+AInventoryItem::AInventoryItem(FName Name)
 {
 	this->Name = Name;
 }
