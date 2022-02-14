@@ -69,6 +69,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ApplyDamage( );
 
+
+	UFUNCTION(BlueprintCallable)
+	void AddHealth(int32 Value);
+	
 	UFUNCTION(Client, Unreliable)
 	void AddHealthClient(float NewValue);
 

@@ -1,25 +1,16 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 
 #include "InventoryComponent.h"
 
-// Sets default values for this component's properties
 UInventoryComponent::UInventoryComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	// ...
 }
 
-
-// Called when the game starts
 void UInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
 	
 }
 TArray<AInventoryItem*>& UInventoryComponent::GetItem()
@@ -88,7 +79,7 @@ void UInventoryComponent::DropItem(TSubclassOf<AInventoryItem> SelectItem, int32
 	auto* CurrentCount = MapItem.Find(SelectItem);
 	if(*CurrentCount >= CountItem)
 	{
-		auto* Owner = GetOwner();
+		/*auto* Owner = GetOwner();
 		for(int i = 0; i< CountItem; i++)
 		{
 			const FVector LocationSpawn = Owner->GetActorLocation()+300;
@@ -97,7 +88,7 @@ void UInventoryComponent::DropItem(TSubclassOf<AInventoryItem> SelectItem, int32
 			Owner->SetActorLocation(LocationSpawn,false,OutSweepHitResult,ETeleportType::None);
 		}
 		CurrentCount -= CountItem;
-		if (CurrentCount == 0)
+		if (CurrentCount == 0)*/
 		{
 			MapItem.Remove(SelectItem);
 		}

@@ -10,21 +10,13 @@ UCLASS()
 class PZ_CODING_API AHealthBag : public AInventoryItem
 {
 	GENERATED_BODY()
-
-	AHealthBag::AHealthBag();
 public:
+    AHealthBag();
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Health")
 	int32 Health;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 MaxHealth;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
-	int32 CurrentHealth;
-
-	UFUNCTION(BlueprintCallable)
-	void AddHealth(int32 Value);
-	
 	UFUNCTION(BlueprintCallable)
 	virtual void InteractItem(APZ_CodingCharacter* Character ) override;
 	

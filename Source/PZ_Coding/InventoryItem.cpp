@@ -4,12 +4,12 @@
 
 AInventoryItem::AInventoryItem()
 {
+	PrimaryActorTick.bCanEverTick = true;
 	DistanceDrop = 300.0f;
 	BoxCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxCollision"));
 	SetRootComponent(BoxCollision);
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMrsh"));
-	USceneComponent* GetRootComponent = nullptr;
-	StaticMesh->SetupAttachment(GetRootComponent);
+	StaticMesh->SetupAttachment(GetRootComponent());
 	
 }
 

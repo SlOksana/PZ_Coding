@@ -91,6 +91,30 @@ void APZ_CodingCharacter::ApplyDamage()
 	}
 
 }
+
+
+void APZ_CodingCharacter::AddHealth(int32 Value)
+{
+	if(GetLocalRole() == ROLE_Authority )
+	{
+		if(CurrentHealth + Value > MaxHealth)
+		{
+			CurrentHealth = MaxHealth;
+		}
+		else
+		{
+			CurrentHealth +=Value;
+		}
+
+		UE_LOG(LogTemp, Display, TEXT("APZ_CodingCharacter::AddHealth: Currebt Health: %i"), CurrentHealth);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Display, TEXT("APZ_CodingCharacter::AddHealth: AddHealth need to call from server only"));
+
+	}
+	
+}
 void APZ_CodingCharacter::AddHealthClient_Implementation(float NewValue)
 {
 	AddHealthServer(NewValue);

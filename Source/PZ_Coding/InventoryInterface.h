@@ -7,6 +7,7 @@
 #include "UObject/Interface.h"
 #include "InventoryInterface.generated.h"
 
+
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
 class UInventoryInterface : public UInterface
