@@ -1,5 +1,8 @@
 #include "PistolWeapon.h"
+
+#include "DrawDebugHelpers.h"
 #include "FireWeapon.h"
+#include "PZ_CodingCharacter.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -32,6 +35,44 @@ void APistolWeapon::InteractWeapon()
 	SetTimer(FiringTimer,this,&APistolWeapon::ServerFire,FireRate);
 	MulticastInteractWeapon();
 }
+
+void APistolWeapon::ServerInteractCurrentWeapon()
+{
+	FVector LocationSocket = GetStaticMeshComponent()->GetSocketLocation("Muzzle");
+	FCollisionQueryParams RV_TraceParams;
+	RV_TraceParams.bTraceComplex = true;
+	FHitResult RV_Hit(ForceInit);
+	FVector LocationEnd = LocationSocket;
+	FVector Forward = this->GetActorForwardVector();
+	Forward = Forward * Range;
+	LocationEnd += Forward;
+	GetWorld()->LineTraceSingleByChannel(
+	   RV_Hit,
+	   LocationSocket,
+	   LocationEnd,
+	   ECC_Pawn,
+	   RV_TraceParams
+	);
+	DrawDebugLine(
+	   GetWorld(),
+	   LocationSocket,
+	   LocationEnd,
+	   FColor(255, 0, 0),
+	   false,
+	   0.3,
+	   0,
+	   2
+	   );
+	/*if (RV_Hit.bBlockingHit)
+	{
+		auto* Character = Cast<APZ_CodingCharacter>(RV_Hit.GetActor());
+		if (Character)
+		{Character->ApplyDamage();}
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *RV_Hit.GetActor()->GetName());
+	}
+*/
+}
+
 void APistolWeapon::ServerFireFunction_Implementation()
 {
 	bCanFire = true;

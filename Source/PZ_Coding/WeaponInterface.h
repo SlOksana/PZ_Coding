@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "BaseWeapon.h"
 #include "WeaponInterface.generated.h"
 
 UINTERFACE(MinimalAPI)
@@ -18,5 +17,5 @@ class PZ_CODING_API IWeaponInterface
 	GENERATED_BODY()
 
 public:
-	virtual void SetWeapon(ABaseWeapon * BaseWeapon) = 0;
+	virtual void SetWeapon(class ABaseWeapon * BaseWeapon) = 0;
 };

@@ -3,11 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "InventoryItem.h"
+#include "NewInventoryItem.h"
 #include "HealthBag.generated.h"
 
 UCLASS()
-class PZ_CODING_API AHealthBag : public AInventoryItem
+class PZ_CODING_API AHealthBag : public ANewInventoryItem
 {
 	GENERATED_BODY()
 public:
@@ -15,7 +15,7 @@ public:
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Health")
-	int32 Health;
+	int32 CurrentHealth;
 
 	UFUNCTION(BlueprintCallable)
 	virtual void InteractItem(APZ_CodingCharacter* Character ) override;

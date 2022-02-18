@@ -1,10 +1,7 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
-
 #include "CoreMinimal.h"
-#include "InventoryItem.h"
 #include "Components/ActorComponent.h"
+//#include "NewInventoryItem.h"
 #include "InventoryComponent.generated.h"
 
 
@@ -18,7 +15,10 @@ public:
 	UInventoryComponent();
 
 	 UPROPERTY(EditAnywhere)
-	TArray<AInventoryItem*> Item;
+	TArray<class UInventoryItem*> Item;
+
+	UPROPERTY()
+	TMap<class ANewInventoryItem*, int32> MapItem;
 
 	UPROPERTY(BlueprintReadWrite)
 	int32 Size = 15;
@@ -29,42 +29,36 @@ public:
 	int32 MaxYItems;
 	
 	UFUNCTION(BlueprintCallable)
-	TArray<AInventoryItem*>& GetItem();
+	TArray<UInventoryItem*>& GetItem();
+
+	void DropItem_Implementation(ANewInventoryItem* SelectItem, int32 CountItem);
+	UFUNCTION(BlueprintCallable)
+	void SetItem(UInventoryItem* Items);
 	
-	UFUNCTION(BlueprintCallable)
-	void SetItem(AInventoryItem* Items);
-	
 
 	UFUNCTION(BlueprintCallable)
-	AInventoryItem* GetItems(const int32 Number) const;
+	UInventoryItem* GetItems(const int32 Number) const;
 
-	UFUNCTION(BlueprintCallable)
-	void AddItem(TSubclassOf<AInventoryItem> NewItem, int32 CountItem);
+	UFUNCTION(Server,BlueprintCallable, Unreliable)
+	void AddItem(ANewInventoryItem* NewItem, int32 CountItem);
 
-	UFUNCTION(BlueprintCallable)
-	bool UseItem(TSubclassOf<AInventoryItem> SelectItem);
+	UFUNCTION(Server,BlueprintCallable, Unreliable)
+	void UseItem(ANewInventoryItem* SelectItem);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(Server,BlueprintCallable, Unreliable)
 	void UseFirstItem();
 
-	UFUNCTION(BlueprintCallable)
-	void DropItem(TSubclassOf<AInventoryItem> SelectItem, int32 CountItem);
+	UFUNCTION(Server,BlueprintCallable, Unreliable)
+	void DropItem(ANewInventoryItem* SelectItem, int32 CountItem);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(Server,BlueprintCallable, Unreliable)
 	void DropFirstItem();
 	
-//	UFUNCTION(BlueprintCallable)
-//	bool AddItem(UInventoryItem* Items);
-
 	UFUNCTION(BlueprintCallable)
 	bool Replete();
 	
-	/*UFUNCTION(Client, Reliable)
-    	void ClientAddItem(UInventoryItem* Items);
-UFUNCTION(Server, BlueprintCallable, Reliable)
-	void ServerAddItem(UInventoryItem* Items);*/
 	UFUNCTION(NetMulticast,BlueprintCallable,Reliable)
-	void MulticastAddItem(AInventoryItem* Items);
+	void MulticastAddItem(UInventoryItem* Items);
 
 	
 protected:
@@ -75,6 +69,4 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-private:
-	TMap<TSubclassOf<AInventoryItem>, int32> MapItem;
 };

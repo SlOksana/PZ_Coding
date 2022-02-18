@@ -8,14 +8,11 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "MainPlayerState.h"
 #include "Net/UnrealNetwork.h"
 #include "Engine/Engine.h"
-#include "TimerManager.h"
 #include "Weapon.h"
+#include "InventoryInterface.h"
 #include "Kismet/GameplayStatics.h"
-#include "Kismet/KismetMathLibrary.h"
-#include "Engine/SkeletalMeshSocket.h"
 #include "InventoryComponent.h"
 
 APZ_CodingCharacter::APZ_CodingCharacter()
@@ -49,9 +46,10 @@ APZ_CodingCharacter::APZ_CodingCharacter()
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 	
 	WeaponManagerComp = CreateDefaultSubobject<UWeaponManagerComponent>(TEXT("WeaponManagerComponent"));
-	MaxHealth = 100.0f;
+    InventoryComp = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
+	MaxHealth = 100;
 	CurrentHealth = MaxHealth;
-    Damage = 10.0f;
+    Damage = 10;
 	APZ_CodingCharacter::Inventory();
 
 }
@@ -77,10 +75,18 @@ void APZ_CodingCharacter::UseItem()
 	}
 }
 
+void APZ_CodingCharacter::GetItem(ANewInventoryItem* NewItem)
+{
+	if(InventoryComp)
+	{
+		InventoryComp->AddItem(NewItem, 1);
+	}
+}
+
 void APZ_CodingCharacter::ApplyDamage()
 {
 		CurrentHealth -= Damage;
-	FString healthMessage=FString::Printf(TEXT("You now have %f health remaining."),CurrentHealth);
+	FString healthMessage=FString::Printf(TEXT("You now have %i health remaining."),CurrentHealth);
 	GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Blue,healthMessage);
 	if(CurrentHealth<=0)
 	{
@@ -97,6 +103,7 @@ void APZ_CodingCharacter::AddHealth(int32 Value)
 {
 	if(GetLocalRole() == ROLE_Authority )
 	{
+		//CurrentHealth += Value;
 		if(CurrentHealth + Value > MaxHealth)
 		{
 			CurrentHealth = MaxHealth;
@@ -106,11 +113,11 @@ void APZ_CodingCharacter::AddHealth(int32 Value)
 			CurrentHealth +=Value;
 		}
 
-		UE_LOG(LogTemp, Display, TEXT("APZ_CodingCharacter::AddHealth: Currebt Health: %i"), CurrentHealth);
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue,FString::Printf( TEXT("APZ_CodingCharacter::AddHealth: Current Health: %i"), CurrentHealth));
 	}
 	else
 	{
-		UE_LOG(LogTemp, Display, TEXT("APZ_CodingCharacter::AddHealth: AddHealth need to call from server only"));
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("APZ_CodingCharacter::AddHealth: AddHealth need to call from server only"));
 
 	}
 	
@@ -122,7 +129,7 @@ void APZ_CodingCharacter::AddHealthClient_Implementation(float NewValue)
 void APZ_CodingCharacter::AddHealthServer_Implementation(float NewValue)
 {
 	CurrentHealth += NewValue;
-	CurrentHealth = FMath::Clamp(CurrentHealth, 0.0f, MaxHealth);
+	CurrentHealth = FMath::Clamp(CurrentHealth, 0, MaxHealth);
 	if (FMath::IsNearlyEqual(CurrentHealth, 0.0f))
 	{
 		RespawnCharacter();
@@ -138,11 +145,6 @@ void APZ_CodingCharacter::Inventory()
 	InventoryComp = CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory"));
 }
 
-UInventoryComponent* APZ_CodingCharacter::GetInventory()
-{
-	return InventoryComp;
-	
-}
 
 void APZ_CodingCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
@@ -172,7 +174,7 @@ void APZ_CodingCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, WeaponManagerComp, &UWeaponManagerComponent::InteractCurrentWeapon);
 	PlayerInputComponent->BindAction("DropDownWeapon", IE_Pressed, this, &APZ_CodingCharacter::OnDropWeapon);
 	PlayerInputComponent->BindAction("DropItem", IE_Pressed, this, &APZ_CodingCharacter::DropItem);
-	PlayerInputComponent->BindAction("UseItem", IE_Pressed, this, APZ_CodingCharacter::UseItem);
+	PlayerInputComponent->BindAction("UseItem", IE_Pressed, this, &APZ_CodingCharacter::UseItem);
 
 }
 void APZ_CodingCharacter::GetLifetimeReplicatedProps(TArray <FLifetimeProperty> & OutLifetimeProps) const
@@ -257,6 +259,11 @@ void APZ_CodingCharacter::OnSetWeapon(ABaseWeapon* NewWeapon)
 {
 	WeaponManagerComp->CurrentWeapon = NewWeapon;
 }
+
+/*UInventoryComponent* APZ_CodingCharacter::GetInventory() 
+{
+	return IInventoryInterface::GetInventory();
+}*/
 
 void APZ_CodingCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
 {

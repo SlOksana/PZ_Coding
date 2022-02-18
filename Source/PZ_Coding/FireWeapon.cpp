@@ -61,9 +61,35 @@ void AFireWeapon::UseAmmo_Implementation()
 }
 
 void AFireWeapon::ServerFire_Implementation()
-{ MulticastInteractWeapon();FHitResult RV_Hit(ForceInit);
+{
+	//MulticastInteractWeapon();
+	FHitResult RV_Hit(ForceInit);
 //	FVector spawnLocation = GetStaticMeshComponent()->GetSocketLocation("Muzzle");
-	
+	/*FVector LocationSocket = GetStaticMeshComponent()->GetSocketLocation("Muzzle");
+	FCollisionQueryParams RV_TraceParams;
+	RV_TraceParams.bTraceComplex = true;
+	FHitResult RV_Hit(ForceInit);
+	FVector LocationEnd = LocationSocket;
+	FVector Forward = this->GetActorForwardVector();
+	Forward = Forward * Range;
+	LocationEnd += Forward;
+	GetWorld()->LineTraceSingleByChannel(
+	   RV_Hit,
+	   LocationSocket,
+	   LocationEnd,
+	   ECC_Pawn,
+	   RV_TraceParams
+	);
+	DrawDebugLine(
+	   GetWorld(),
+	   LocationSocket,
+	   LocationEnd,
+	   FColor(255, 0, 0),
+	   false,
+	   0.3,
+	   0,
+	   2
+	   );*/
 	if (RV_Hit.bBlockingHit)
 	{
 		auto* Character = Cast<APZ_CodingCharacter>(RV_Hit.GetActor());
@@ -102,7 +128,7 @@ void AFireWeapon::MulticastInteractWeapon_Implementation()
 void AFireWeapon::ServerInteractCurrentWeapon_Implementation()
 {
 	
-	ONInteractFireWeaponMulticast.Broadcast();
+	//ONInteractFireWeaponMulticast.Broadcast();
 	UE_LOG(LogTemp, Warning, TEXT("IteractWeapon"));
 	
 	if(!CanStartFire())

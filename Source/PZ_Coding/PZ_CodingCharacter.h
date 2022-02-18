@@ -1,5 +1,6 @@
 #pragma once
 #include "CoreMinimal.h"
+
 #include "GameFramework/Character.h"
 #include "InventoryInterface.h"
 #include "WeaponInterface.h"
@@ -27,14 +28,14 @@ public:
 	USceneComponent* SceneComp;
 	
 	UPROPERTY(Category="Character", VisibleAnywhere,BlueprintReadWrite, meta=(AllowPublicAccess = "true"))
-	UInventoryComponent* InventoryComp;
+    UInventoryComponent* InventoryComp;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float MaxHealth;
+	int32 MaxHealth;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
-	float CurrentHealth;
+	int32 CurrentHealth;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float Damage;
+	int32 Damage;
 
 	
     void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
@@ -63,8 +64,12 @@ public:
   //  UFUNCTION(Server, Unreliable)
 	//void ServerForwardHeightTrace();
 
+	UFUNCTION()
 	void DropItem();
+	UFUNCTION()
 	void UseItem();
+	void GetItem(ANewInventoryItem* NewItem);
+	
 	
 	UFUNCTION(BlueprintCallable)
 	void ApplyDamage( );
@@ -82,10 +87,9 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastClimbAnim();
 
-	void OnSetWeapon(ABaseWeapon* NewWeapon = nullptr);
+	void OnSetWeapon(class ABaseWeapon* NewWeapon = nullptr);
 	
-	UFUNCTION(BlueprintCallable)
-	virtual UInventoryComponent* GetInventory() override;
+	//virtual  UInventoryComponent* GetInventory() override;
 	virtual void Inventory() override;
 	virtual void Tick(float DeltaTime) override;
 	

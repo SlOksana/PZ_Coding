@@ -34,6 +34,7 @@ protected:
 public:
 	virtual bool CanStartFire() override;
 	virtual void InteractWeapon() override;
+	virtual void ServerInteractCurrentWeapon() override;
 	virtual void Tick(float DeltaTime) override;
 
 };

@@ -22,8 +22,6 @@ public:
 	FTimerHandle FiringTimer;
 	UPROPERTY(EditDefaultsOnly, Category="Gameplay|Projectile")
 	TSubclassOf<class AThrowingWeapon> Grenade;
-	//UPROPERTY(EditDefaultsOnly, Category="Gameplay|Projectile")
-	//TSubclassOf<class AProjectile> Projectile;
 	virtual void ServerInteractCurrentWeapon_Implementation() override;
 	virtual void InteractWeapon() override;
 

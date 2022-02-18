@@ -3,9 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-//#include "Weapon.h"
-#include "BaseWeapon.h"
-#include "Components/ActorComponent.h"
+//#include "Components/ActorComponent.h"
 #include "WeaponManagerComponent.generated.h"
 
 
@@ -17,11 +15,12 @@ class PZ_CODING_API UWeaponManagerComponent : public UActorComponent
 public:
 	UWeaponManagerComponent();
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	ABaseWeapon* CurrentWeapon;
+	class ABaseWeapon* CurrentWeapon;
+	
 	int32 DistanceToDropWeapon;
 		
 	UFUNCTION(BlueprintCallable)
-	  bool SetCurrentWeapon(ABaseWeapon* NewWeapon);
+	  void SetCurrentWeapon(ABaseWeapon* NewWeapon);
 	
 	UFUNCTION(BlueprintCallable)
 	void ReloadCurrentWeapon();

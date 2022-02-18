@@ -2,8 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Components/BoxComponent.h"
-#include "InterfaceC.h"
+//#include "InterfaceC.h"
 #include "BaseWeapon.generated.h"
 
 class USphereComponent;
@@ -16,15 +15,15 @@ class PZ_CODING_API ABaseWeapon : public AActor
 	ABaseWeapon();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	UBoxComponent* BoxComponent;
+	class UBoxComponent* BoxComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	UStaticMeshComponent* StaticMeshComponent;
+	class UStaticMeshComponent* StaticMeshComponent;
 
 	UFUNCTION(BlueprintCallable)
-	UBoxComponent* GetBoxComponent()  { return  BoxComponent; }
+	 UBoxComponent* GetBoxComponent()  { return  BoxComponent; }
 
-	UStaticMeshComponent* GetStaticMeshComponent() const { return  StaticMeshComponent; }
+	 UStaticMeshComponent* GetStaticMeshComponent() const { return  StaticMeshComponent; }
 
 protected:
 	virtual void BeginPlay() override;

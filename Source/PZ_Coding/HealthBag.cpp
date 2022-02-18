@@ -1,13 +1,13 @@
 #include "HealthBag.h"
 AHealthBag::AHealthBag()
 {
-    Health = 10;
+    CurrentHealth = 10;
 	
 }
 
 void AHealthBag::InteractItem(APZ_CodingCharacter* Character)
 {
 	Super::InteractItem(Character);
-	Character->AddHealth(Health);
+Character->AddHealth(CurrentHealth);
 	
 }

@@ -1,6 +1,9 @@
 
 #include "InventoryComponent.h"
 
+#include "NewInventoryItem.h"
+#include "Components/BoxComponent.h"
+
 UInventoryComponent::UInventoryComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
@@ -13,11 +16,11 @@ void UInventoryComponent::BeginPlay()
 
 	
 }
-TArray<AInventoryItem*>& UInventoryComponent::GetItem()
+TArray<UInventoryItem*>& UInventoryComponent::GetItem()
 {
 	return Item;
 }
-AInventoryItem* UInventoryComponent::GetItems(const int32 Number) const 
+UInventoryItem* UInventoryComponent::GetItems(const int32 Number) const 
 {
 	if (Number>Item.Num())
 	{
@@ -29,8 +32,9 @@ AInventoryItem* UInventoryComponent::GetItems(const int32 Number) const
 	}
 }
 
-void UInventoryComponent::AddItem(TSubclassOf<AInventoryItem> NewItem, int32 CountItem)
+void UInventoryComponent::AddItem_Implementation(ANewInventoryItem* NewItem, int32 CountItem)
 {
+NewItem->SetActorHiddenInGame(true);
 	auto* CurrentCount = MapItem.Find(NewItem);
 	if(MapItem.Find(NewItem) == nullptr)
 	{
@@ -42,12 +46,12 @@ void UInventoryComponent::AddItem(TSubclassOf<AInventoryItem> NewItem, int32 Cou
 	}
 }
 
-bool UInventoryComponent::UseItem(TSubclassOf<AInventoryItem> SelectItem)
+void UInventoryComponent::UseItem_Implementation(ANewInventoryItem* SelectItem)
 {
-	auto* Item = Cast<AInventoryItem>(SelectItem.Get());
-	if (Item)
+	ANewInventoryItem* NewItem = Cast<ANewInventoryItem>(SelectItem);
+		if (NewItem)
 	{
-		auto* Character = Cast<APZ_CodingCharacter>(GetOwner());
+		APZ_CodingCharacter* Character = Cast<APZ_CodingCharacter>(GetOwner());
 		auto* CurrentCount = MapItem.Find(SelectItem);
 		if(Character)
 		{
@@ -59,36 +63,38 @@ bool UInventoryComponent::UseItem(TSubclassOf<AInventoryItem> SelectItem)
 			{
 				CurrentCount -= 1;
 			}
-			Item->InteractItem(Character);
-			return true;
-		}
+			NewItem->InteractItem(Character);
+				}
 			}
-	return false;
+	}
+
+void UInventoryComponent::UseFirstItem_Implementation()
+{
+	TArray< ANewInventoryItem*> Keys;
+	const int32 KeysAmount = MapItem.GetKeys(Keys);
+	if (KeysAmount >0)
+	{
+		UseItem(Keys[0]);
+	}
 }
 
-void UInventoryComponent::UseFirstItem()
+void UInventoryComponent::DropItem_Implementation(ANewInventoryItem* SelectItem, int32 CountItem)
 {
-	TArray<TSubclassOf<AInventoryItem>> Keys;
-	MapItem.GetKeys(Keys);
-	UseItem(Keys[0]);
-}
-
-void UInventoryComponent::DropItem(TSubclassOf<AInventoryItem> SelectItem, int32 CountItem)
-{
-	auto* Item = Cast<AInventoryItem>(SelectItem->GetClass());
+	auto* NewItem = Cast<ANewInventoryItem>(SelectItem->GetClass());
 	auto* CurrentCount = MapItem.Find(SelectItem);
 	if(*CurrentCount >= CountItem)
 	{
-		/*auto* Owner = GetOwner();
+		auto* Owner = Cast<APZ_CodingCharacter>(GetOwner());
 		for(int i = 0; i< CountItem; i++)
 		{
-			const FVector LocationSpawn = Owner->GetActorLocation()+300;
-			//const FRotator RotatorSpawn = Owner->GetActorRotation();
-			FHitResult* OutSweepHitResult = nullptr;
-			Owner->SetActorLocation(LocationSpawn,false,OutSweepHitResult,ETeleportType::None);
+			const FVector LocationSpawn = Owner->GetActorRightVector() * SelectItem->DistanceDrop;
+			const FRotator RotatorSpawn = Owner->GetActorRotation();
+			SelectItem->SetActorHiddenInGame(false);
+			SelectItem->SetActorLocationAndRotation(LocationSpawn, RotatorSpawn);
+			SelectItem->BoxCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 		}
-		CurrentCount -= CountItem;
-		if (CurrentCount == 0)*/
+		*CurrentCount -= CountItem;
+		if (*CurrentCount == 0)
 		{
 			MapItem.Remove(SelectItem);
 		}
@@ -96,14 +102,17 @@ void UInventoryComponent::DropItem(TSubclassOf<AInventoryItem> SelectItem, int32
 	
 }
 
-void UInventoryComponent::DropFirstItem()
+void UInventoryComponent::DropFirstItem_Implementation()
 {
-	TArray<TSubclassOf<AInventoryItem>> Keys;
-	MapItem.GetKeys(Keys);
-	DropItem(Keys[0], *MapItem.Find(Keys[0]));
+	TArray<ANewInventoryItem* > Keys;
+	const int32 KeysAmount = MapItem.GetKeys(Keys);
+	if (KeysAmount > 0)
+	{
+		DropItem(Keys[0], *MapItem.Find(Keys[0]));
+	}
 }
 
-void UInventoryComponent::SetItem(AInventoryItem* Items)
+void UInventoryComponent::SetItem(UInventoryItem* Items)
 {
 	if(Item.Num() < (MaxXItems*MaxYItems))
 	{
@@ -112,7 +121,7 @@ void UInventoryComponent::SetItem(AInventoryItem* Items)
 }
 
 
-void UInventoryComponent::MulticastAddItem_Implementation(AInventoryItem* Items)
+void UInventoryComponent::MulticastAddItem_Implementation(UInventoryItem* Items)
 {
 	Item.Add(Items);
 }

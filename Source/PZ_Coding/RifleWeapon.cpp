@@ -39,12 +39,13 @@ void ARifleWeapon::ServerInteractCurrentWeapon_Implementation()
 {   FVector spawnLocation = GetStaticMeshComponent()->GetSocketLocation("Grenade");
 	FRotator Rotation = this->GetActorRotation();
 	Rotation.Pitch += UKismetMathLibrary::RandomFloatInRange(-10.f,10.f);
-	Rotation.Yaw += UKismetMathLibrary::RandomFloatInRange(-10.f,10.f);
+	//Rotation.Yaw += UKismetMathLibrary::RandomFloatInRange(-10.f,10.f);
 	FVector LocationSocket = GetStaticMeshComponent()->GetSocketLocation("Muzzle");
 	FVector Forward = this->GetActorForwardVector();
 	FVector LocationEnd = LocationSocket;
 	for (int32 i=0; i<Lines; i++)
 	{
+		Rotation.Yaw += UKismetMathLibrary::RandomFloatInRange(-10.f,10.f);
 		FCollisionQueryParams RV_TraceParams;
 		RV_TraceParams.bTraceComplex = true;
 		FHitResult RV_Hit(ForceInit);
@@ -70,8 +71,6 @@ void ARifleWeapon::ServerInteractCurrentWeapon_Implementation()
 		}
  
 	}
-		
-			
 		
 	
 	

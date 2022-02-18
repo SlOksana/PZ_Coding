@@ -32,7 +32,7 @@ AProjectile::AProjectile()
 	SphereComponent->SetCollisionProfileName(TEXT("BlockAllDynamic"));
 	RootComponent = SphereComponent;
 	
-		SphereComponent->OnComponentHit.AddDynamic(this, &AProjectile::OnProjectileImpact);
+	SphereComponent->OnComponentHit.AddDynamic(this, &AProjectile::OnProjectileImpact);
 
 
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> DefaultMesh(TEXT("/Game/StarterContent/Shapes/Shape_Sphere.Shape_Sphere"));

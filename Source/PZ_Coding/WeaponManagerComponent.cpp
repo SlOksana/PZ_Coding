@@ -1,7 +1,5 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "WeaponManagerComponent.h"
+#include "InterfaceC.h"
 #include "PZ_CodingCharacter.h"
 #include "Components/BoxComponent.h"
 
@@ -19,7 +17,8 @@ void UWeaponManagerComponent::BeginPlay()
 	
 	
 }
-bool UWeaponManagerComponent::SetCurrentWeapon(ABaseWeapon* NewWeapon)
+
+void UWeaponManagerComponent::SetCurrentWeapon(ABaseWeapon* NewWeapon)
 {
 	/*if (!CurrentWeapon)
 	{
@@ -32,16 +31,28 @@ bool UWeaponManagerComponent::SetCurrentWeapon(ABaseWeapon* NewWeapon)
 	}
 	return false;*/
 	if (!CurrentWeapon && !NewWeapon->GetOwner())
-	{
+	{	//return false;
+		//return false;
+	
 		CurrentWeapon = NewWeapon;
-		CurrentWeapon->GetBoxComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		auto* Character = Cast<APZ_CodingCharacter>(GetOwner());
+		
 		CurrentWeapon->SetOwner(GetOwner());
-		CurrentWeapon->AttachToActor(Character, FAttachmentTransformRules::KeepWorldTransform,
+		CurrentWeapon->AttachToComponent(Character->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform,
 									FName(TEXT("SocketWeapon")));
-		return true;
+		CurrentWeapon->SetActorRelativeLocation(FVector(-100,0,20));
+		CurrentWeapon->GetBoxComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	/*	
+        		
+        		
+        		
+        		CurrentWeapon->AttachToActor(Character, FAttachmentTransformRules::KeepRelativeTransform,
+        									FName(TEXT("SocketWeapon")));*/
+		//CurrentWeapon->GetBoxComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		//CurrentWeapon->GetBoxComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		//return true;
 	}
-	return false;
+	//return false;
 }
 void UWeaponManagerComponent::ReloadCurrentWeapon()
 {

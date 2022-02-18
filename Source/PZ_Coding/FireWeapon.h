@@ -1,12 +1,8 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
-
 #include "CoreMinimal.h"
 #include "BaseWeapon.h"
-//#include "ThrowingWeapon.h"
+#include "InterfaceC.h"
 #include "FireWeapon.generated.h"
-//class AThrowingWeapon;
 DECLARE_DYNAMIC_DELEGATE(FInteractFireWeaponDynamic);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FInteractFireWeaponMulticast);
 
@@ -64,10 +60,7 @@ public:
 	
 	UFUNCTION(NetMulticast,Unreliable)
 	virtual void ServerInteractCurrentWeapon();
-	
-	//UPROPERTY(EditAnywhere,BlueprintReadWrite)
-    	//TSubclassOf<AThrowingWeapon> ProjectileClass;
-	
+		
 	virtual bool CanStartFire();
 	virtual void Tick(float DeltaTime) override;
 
