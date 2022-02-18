@@ -8,6 +8,7 @@
 
 ARifleWeapon::ARifleWeapon()
 {
+	PrimaryActorTick.bCanEverTick = true;
 	MaxAmmo = 16;
 	CurrentAmmoClip = 12;
 	AmmoPerClip = 12;
@@ -20,7 +21,7 @@ ARifleWeapon::ARifleWeapon()
 }
 void ARifleWeapon::InteractWeapon()
 {
-	//ONInteractFireWeaponMulticast.Broadcast();
+	ONInteractFireWeaponMulticast.Broadcast();
 	if(!CanStartFire())
 	{
 		return;
@@ -69,11 +70,14 @@ void ARifleWeapon::ServerInteractCurrentWeapon_Implementation()
 			{Character->ApplyDamage();}
 			UE_LOG(LogTemp, Warning, TEXT("%s"), *RV_Hit.GetActor()->GetName());
 		}
- 
-	}
-		
-	
-	
+ 	}
+			
+}
+
+void ARifleWeapon::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
 }
 
 

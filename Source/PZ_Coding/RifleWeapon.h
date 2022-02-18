@@ -23,6 +23,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category="Gameplay|Projectile")
 	TSubclassOf<class AThrowingWeapon> Grenade;
 	virtual void ServerInteractCurrentWeapon_Implementation() override;
+	void Tick(float DeltaTime);
 	virtual void InteractWeapon() override;
 
 };
