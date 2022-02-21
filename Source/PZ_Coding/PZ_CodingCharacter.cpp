@@ -14,6 +14,7 @@
 #include "InventoryInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "InventoryComponent.h"
+#include "ThrowingWeapon.h"
 
 APZ_CodingCharacter::APZ_CodingCharacter()
 {
@@ -85,6 +86,8 @@ void APZ_CodingCharacter::GetItem(ANewInventoryItem* NewItem)
 
 void APZ_CodingCharacter::ApplyDamage()
 {
+	FHitResult RV_Hit(ForceInit);
+		
 		CurrentHealth -= Damage;
 	FString healthMessage=FString::Printf(TEXT("You now have %i health remaining."),CurrentHealth);
 	GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Blue,healthMessage);

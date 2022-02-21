@@ -70,10 +70,9 @@ void AProjectile::OnProjectileImpact(UPrimitiveComponent* HitComponent, AActor* 
 	{
 		UGameplayStatics::ApplyPointDamage(OtherActor, Damage, NormalImpulse, Hit,
 		GetInstigatorController(), this, DamageType);
-		
-	}
+		}
 	
-	Destroy();
+	
 }
 void AProjectile::Destroyed()
 {
@@ -82,6 +81,7 @@ void AProjectile::Destroyed()
 	FVector spawnLocation = GetActorLocation();
 	UGameplayStatics::SpawnEmitterAtLocation(this, ExplosionEffect,
 	spawnLocation,FRotator::ZeroRotator, true, EPSCPoolMethod::AutoRelease);
+	
 }
 
 // Called every frame

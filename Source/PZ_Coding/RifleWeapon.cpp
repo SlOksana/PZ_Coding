@@ -2,7 +2,6 @@
 #include "PZ_CodingCharacter.h"
 #include "DrawDebugHelpers.h"
 #include "ThrowingWeapon.h"
-#include "Projectile.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -19,6 +18,7 @@ ARifleWeapon::ARifleWeapon()
 	bIsReloading = false;
 	//Projectile = AProjectile::StaticClass();
 }
+
 void ARifleWeapon::InteractWeapon()
 {
 	ONInteractFireWeaponMulticast.Broadcast();
@@ -37,7 +37,9 @@ void ARifleWeapon::InteractWeapon()
 }
 
 void ARifleWeapon::ServerInteractCurrentWeapon_Implementation()
-{   FVector spawnLocation = GetStaticMeshComponent()->GetSocketLocation("Grenade");
+{
+	FTransform Transform = this->GetActorTransform();
+	FVector spawnLocation = GetStaticMeshComponent()->GetSocketLocation("Grenade");
 	FRotator Rotation = this->GetActorRotation();
 	Rotation.Pitch += UKismetMathLibrary::RandomFloatInRange(-10.f,10.f);
 	//Rotation.Yaw += UKismetMathLibrary::RandomFloatInRange(-10.f,10.f);
@@ -63,13 +65,37 @@ void ARifleWeapon::ServerInteractCurrentWeapon_Implementation()
 		   ECC_Pawn,
 		   RV_TraceParams
 		);
+		UGameplayStatics::SpawnEmitterAtLocation(
+		GetWorld(),
+		ParticleSystem,
+		GetStaticMeshComponent()->GetSocketTransform("Muzzle", RTS_World),
+		true,
+		EPSCPoolMethod::AutoRelease,
+		true
+	);
 		if (RV_Hit.bBlockingHit)
 		{
 			auto* Character = Cast<APZ_CodingCharacter>(RV_Hit.GetActor());
+
 			if (Character)
-			{Character->ApplyDamage();}
+			{
+				Character->ApplyDamage();
+							
+			}
 			UE_LOG(LogTemp, Warning, TEXT("%s"), *RV_Hit.GetActor()->GetName());
 		}
+<<<<<<< Updated upstream
+=======
+<<<<<<< HEAD
+ 
+	}
+		
+	
+	
+		
+	}
+=======
+>>>>>>> Stashed changes
  	}
 			
 }
@@ -81,3 +107,4 @@ void ARifleWeapon::Tick(float DeltaTime)
 }
 
 
+>>>>>>> PZ_16

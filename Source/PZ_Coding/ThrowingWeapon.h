@@ -10,7 +10,7 @@ DECLARE_DYNAMIC_DELEGATE(FInteractThrowingWeaponDynamic);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FInteractThrowingWeaponMulticast);
 
 UCLASS()
-class PZ_CODING_API  AThrowingWeapon : public ABaseWeapon
+class PZ_CODING_API  AThrowingWeapon : public AFireWeapon
 {
 	GENERATED_BODY()
 
@@ -23,12 +23,12 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category="Gameplay|Projectile")
 	TSubclassOf<class AThrowingWeapon> ProjectileClass;
 	
-	 virtual void InteractWeapon();
-	
+	virtual void InteractWeapon();
+
 	UFUNCTION(BlueprintCallable)
 	USphereComponent* GetSphereComponent()  { return  SphereComponent; }
 
-
+	
 	UFUNCTION(Client, Unreliable)
 	void InteractWeaponClient();
 
@@ -36,16 +36,19 @@ public:
 	void InteractWeaponServer();
 
 	UFUNCTION(NetMulticast, Unreliable)
- 	void InteractWeaponMulticast();
+	 void InteractWeaponMulticast();
 
 	FTimerHandle TimerToBoom;
 	void OnTimerToBoom();
 	
 	void DestroyGrenade();
 	float TimeToDestroy;
-	
+
+	float Duration;
+
 protected:
 	virtual void BeginPlay() override;
+	
 	
 public:
 	UPROPERTY(VisibleAnywhere, Category = "Movement")
@@ -55,8 +58,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FInteractThrowingWeaponMulticast OnInteractThrowingWeaponMulticast;
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 };
 
-	
-	
-	
+

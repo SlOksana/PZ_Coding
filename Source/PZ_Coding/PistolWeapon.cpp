@@ -63,14 +63,22 @@ void APistolWeapon::ServerInteractCurrentWeapon()
 	   0,
 	   2
 	   );
+<<<<<<< Updated upstream
 	/*if (RV_Hit.bBlockingHit)
+=======
+	if (RV_Hit.bBlockingHit)
+>>>>>>> Stashed changes
 	{
 		auto* Character = Cast<APZ_CodingCharacter>(RV_Hit.GetActor());
 		if (Character)
 		{Character->ApplyDamage();}
 		UE_LOG(LogTemp, Warning, TEXT("%s"), *RV_Hit.GetActor()->GetName());
 	}
+<<<<<<< Updated upstream
 */
+=======
+
+>>>>>>> Stashed changes
 }
 
 void APistolWeapon::ServerFireFunction_Implementation()

@@ -20,6 +20,8 @@ void UWeaponManagerComponent::BeginPlay()
 
 void UWeaponManagerComponent::SetCurrentWeapon(ABaseWeapon* NewWeapon)
 {
+<<<<<<< HEAD
+=======
 	/*if (!CurrentWeapon)
 	{
 		CurrentWeapon = NewWeapon;
@@ -30,16 +32,30 @@ void UWeaponManagerComponent::SetCurrentWeapon(ABaseWeapon* NewWeapon)
 	  	return true;
 	}a
 	return false;*/
+>>>>>>> PZ_16
 	if (!CurrentWeapon && !NewWeapon->GetOwner())
+<<<<<<< Updated upstream
 	{	//return false;
 		//return false;
 	
+=======
+	{
+		/*CurrentWeapon = NewWeapon;
+		auto* Character = Cast<APZ_CodingCharacter>(GetOwner());
+		
+		//CurrentWeapon->SetOwner(GetOwner());
+		CurrentWeapon->AttachToComponent(Character->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale,
+									FName(TEXT("SocketWeapon")));
+		CurrentWeapon->SetActorRelativeLocation(FVector(-100,0,20));
+		*/
+>>>>>>> Stashed changes
 		CurrentWeapon = NewWeapon;
 		auto* Character = Cast<APZ_CodingCharacter>(GetOwner());
 		
 		//CurrentWeapon->SetOwner(GetOwner());
 		CurrentWeapon->AttachToComponent(Character->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale,
 									FName(TEXT("SocketWeapon")));
+<<<<<<< Updated upstream
 		CurrentWeapon->SetActorRelativeLocation(FVector(-100,0,20));
 		CurrentWeapon->GetBoxComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	/*	
@@ -53,6 +69,9 @@ void UWeaponManagerComponent::SetCurrentWeapon(ABaseWeapon* NewWeapon)
 		//return true;
 	}
 	//return false;
+=======
+	}
+>>>>>>> Stashed changes
 }
 void UWeaponManagerComponent::ReloadCurrentWeapon()
 {
