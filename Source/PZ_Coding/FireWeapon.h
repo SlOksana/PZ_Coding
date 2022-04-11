@@ -23,7 +23,7 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	int32 AmmoPerClip;
 	
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	float ReloadDuration;
 	
 	UPROPERTY(BlueprintReadWrite)

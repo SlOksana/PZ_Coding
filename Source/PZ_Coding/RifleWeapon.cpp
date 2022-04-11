@@ -53,8 +53,8 @@ void ARifleWeapon::ServerInteractCurrentWeapon_Implementation()
 		RV_TraceParams.bTraceComplex = true;
 		FHitResult RV_Hit(ForceInit);
 		FVector NewForward = Forward * Range;
-		NewForward.Z += UKismetMathLibrary::RandomIntegerInRange(-200,200);
-		NewForward.Y += UKismetMathLibrary::RandomIntegerInRange(-200,200);
+		NewForward.Z += UKismetMathLibrary::RandomIntegerInRange(-400,400);
+		NewForward.Y += UKismetMathLibrary::RandomIntegerInRange(-400,400);
 		LocationEnd += NewForward;
 		GetWorld()->SpawnActor(Grenade,&spawnLocation,&Rotation);
    
@@ -65,6 +65,7 @@ void ARifleWeapon::ServerInteractCurrentWeapon_Implementation()
 		   ECC_Pawn,
 		   RV_TraceParams
 		);
+		
 		UGameplayStatics::SpawnEmitterAtLocation(
 		GetWorld(),
 		ParticleSystem,
@@ -84,21 +85,13 @@ void ARifleWeapon::ServerInteractCurrentWeapon_Implementation()
 			}
 			UE_LOG(LogTemp, Warning, TEXT("%s"), *RV_Hit.GetActor()->GetName());
 		}
-<<<<<<< Updated upstream
-=======
-<<<<<<< HEAD
+
  
 	}
 		
-	
-	
 		
 	}
-=======
->>>>>>> Stashed changes
- 	}
-			
-}
+
 
 void ARifleWeapon::Tick(float DeltaTime)
 {
@@ -106,5 +99,3 @@ void ARifleWeapon::Tick(float DeltaTime)
 
 }
 
-
->>>>>>> PZ_16

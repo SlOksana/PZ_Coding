@@ -1,6 +1,7 @@
 #include "WeaponManagerComponent.h"
 #include "InterfaceC.h"
 #include "PZ_CodingCharacter.h"
+#include "ShooterCharacter.h"
 #include "Components/BoxComponent.h"
 
 UWeaponManagerComponent::UWeaponManagerComponent()
@@ -20,59 +21,41 @@ void UWeaponManagerComponent::BeginPlay()
 
 void UWeaponManagerComponent::SetCurrentWeapon(ABaseWeapon* NewWeapon)
 {
-<<<<<<< HEAD
-=======
-	/*if (!CurrentWeapon)
-	{
-		CurrentWeapon = NewWeapon;
-		auto* Character = Cast<APZ_CodingCharacter>(GetOwner());
-	    CurrentWeapon->SetOwner(GetOwner());
-		CurrentWeapon->AttachToActor(Character, FAttachmentTransformRules::KeepWorldTransform, FName(TEXT("SocketWeapon")));
-	//	CurrentWeapon->SetActorRelativeLocation(FVector{50,0,20});
-	  	return true;
-	}a
-	return false;*/
->>>>>>> PZ_16
-	if (!CurrentWeapon && !NewWeapon->GetOwner())
-<<<<<<< Updated upstream
-	{	//return false;
-		//return false;
+
 	
-=======
+	if (!CurrentWeapon)
 	{
-		/*CurrentWeapon = NewWeapon;
-		auto* Character = Cast<APZ_CodingCharacter>(GetOwner());
-		
-		//CurrentWeapon->SetOwner(GetOwner());
-		CurrentWeapon->AttachToComponent(Character->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale,
-									FName(TEXT("SocketWeapon")));
-		CurrentWeapon->SetActorRelativeLocation(FVector(-100,0,20));
-		*/
->>>>>>> Stashed changes
 		CurrentWeapon = NewWeapon;
 		auto* Character = Cast<APZ_CodingCharacter>(GetOwner());
 		
-		//CurrentWeapon->SetOwner(GetOwner());
-		CurrentWeapon->AttachToComponent(Character->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale,
+		CurrentWeapon->SetOwner(GetOwner());
+		CurrentWeapon->AttachToComponent(Character->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform,
 									FName(TEXT("SocketWeapon")));
-<<<<<<< Updated upstream
 		CurrentWeapon->SetActorRelativeLocation(FVector(-100,0,20));
+		CurrentWeapon->SetActorRelativeRotation(FRotator(-40,200,-190));
 		CurrentWeapon->GetBoxComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	/*	
-        		
-        		
-        		
-        		CurrentWeapon->AttachToActor(Character, FAttachmentTransformRules::KeepRelativeTransform,
-        									FName(TEXT("SocketWeapon")));*/
-		//CurrentWeapon->GetBoxComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		//CurrentWeapon->GetBoxComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		//return true;
-	}
-	//return false;
-=======
-	}
->>>>>>> Stashed changes
+			}
+
+
 }
+
+void UWeaponManagerComponent::SetShooterCurrentWeapon(ABaseWeapon* NewWeapon)
+{
+	if (!CurrentWeapon)
+	{
+		CurrentWeapon = NewWeapon;
+		auto* Character = Cast<AShooterCharacter>(GetOwner());
+		
+		CurrentWeapon->SetOwner(GetOwner());
+		CurrentWeapon->AttachToComponent(Character->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform,
+									FName(TEXT("SocketWeapon")));
+		CurrentWeapon->SetActorRelativeLocation(FVector(40,50,100));
+		CurrentWeapon->SetActorRelativeRotation(FRotator(180,290,180));
+		CurrentWeapon->GetBoxComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+
+}
+
 void UWeaponManagerComponent::ReloadCurrentWeapon()
 {
 	if(CurrentWeapon)

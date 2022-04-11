@@ -16,10 +16,6 @@ class PZ_CODING_API ABaseWeapon : public AActor
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UBoxComponent* BoxComponent;
-<<<<<<< Updated upstream
-=======
-	
->>>>>>> Stashed changes
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UStaticMeshComponent* StaticMeshComponent;

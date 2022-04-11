@@ -21,6 +21,9 @@ public:
 		
 	UFUNCTION(BlueprintCallable)
 	  void SetCurrentWeapon(ABaseWeapon* NewWeapon);
+
+	UFUNCTION(BlueprintCallable)
+	  void SetShooterCurrentWeapon(ABaseWeapon* NewWeapon);
 	
 	UFUNCTION(BlueprintCallable)
 	void ReloadCurrentWeapon();

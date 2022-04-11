@@ -37,6 +37,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 Damage;
 
+	UWeaponManagerComponent* GetWeaponManagerComponent() const
+	{
+		return WeaponManagerComp;
+	}
 	
     void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
@@ -87,6 +91,7 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastClimbAnim();
 
+	UFUNCTION(BlueprintCallable)
 	void OnSetWeapon(class ABaseWeapon* NewWeapon = nullptr);
 	
 	//virtual  UInventoryComponent* GetInventory() override;
