@@ -30,6 +30,9 @@ public:
 	UPROPERTY(Category="Character", VisibleAnywhere,BlueprintReadWrite, meta=(AllowPublicAccess = "true"))
     UInventoryComponent* InventoryComp;
 	
+	UPROPERTY(Category=Character, VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
+	UPawnNoiseEmitterComponent* NoiseEmitter;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 MaxHealth;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
@@ -112,7 +115,7 @@ protected:
 
 protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	
+	virtual void TickActor(float DeltaTime, ELevelTick TickType, FActorTickFunction& ThisTickFunction) override;
 public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }

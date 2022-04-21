@@ -15,33 +15,36 @@ void UBTService_PlayerLocationIfSeen::TickNode(UBehaviorTreeComponent& OwnerComp
 
 	
 	APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-	if(PlayerPawn == nullptr)
-	{
-		return;
-	}
+	//if(PlayerPawn->GetNetMode() == NM_Standalone)
+	//{
+		if(PlayerPawn == nullptr)
+		{
+			return;
+		}
 
-	if(OwnerComp.GetAIOwner() == nullptr)
-	{
-		return;
-	}
+		if(OwnerComp.GetAIOwner() == nullptr)
+		{
+			return;
+		}
 
-	if(OwnerComp.GetAIOwner()->LineOfSightTo(PlayerPawn))
-	{
-		OwnerComp.GetBlackboardComponent()->SetValueAsObject(GetSelectedBlackboardKey(), PlayerPawn);
+		if(OwnerComp.GetAIOwner()->LineOfSightTo(PlayerPawn))
+		{
+			OwnerComp.GetBlackboardComponent()->SetValueAsObject(GetSelectedBlackboardKey(), PlayerPawn);
 		
+		}
+
+		else
+		{
+			OwnerComp.GetBlackboardComponent()->ClearValue(GetSelectedBlackboardKey());
+		}
+	}
+//}
+	void UBTService_PlayerLocationIfSeen::OnGameplayTaskActivated(UGameplayTask& Task)
+	{
+		Super::OnGameplayTaskActivated(Task);
 	}
 
-	else
+	void UBTService_PlayerLocationIfSeen::OnGameplayTaskDeactivated(UGameplayTask& Task)
 	{
-		OwnerComp.GetBlackboardComponent()->ClearValue(GetSelectedBlackboardKey());
-	}}
-
-void UBTService_PlayerLocationIfSeen::OnGameplayTaskActivated(UGameplayTask& Task)
-{
-	Super::OnGameplayTaskActivated(Task);
-}
-
-void UBTService_PlayerLocationIfSeen::OnGameplayTaskDeactivated(UGameplayTask& Task)
-{
-	Super::OnGameplayTaskDeactivated(Task);
-}
+		Super::OnGameplayTaskDeactivated(Task);
+	}

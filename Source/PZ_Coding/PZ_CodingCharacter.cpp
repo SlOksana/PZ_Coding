@@ -15,6 +15,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "InventoryComponent.h"
 #include "ThrowingWeapon.h"
+#include "Components/PawnNoiseEmitterComponent.h"
 
 APZ_CodingCharacter::APZ_CodingCharacter()
 {
@@ -48,6 +49,7 @@ APZ_CodingCharacter::APZ_CodingCharacter()
 	
 	WeaponManagerComp = CreateDefaultSubobject<UWeaponManagerComponent>(TEXT("WeaponManagerComponent"));
     InventoryComp = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
+	NoiseEmitter = CreateDefaultSubobject<UPawnNoiseEmitterComponent>(TEXT("NoiseEmitter"));
 	MaxHealth = 100;
 	CurrentHealth = MaxHealth;
     Damage = 10;
@@ -180,6 +182,14 @@ void APZ_CodingCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 	PlayerInputComponent->BindAction("UseItem", IE_Pressed, this, &APZ_CodingCharacter::UseItem);
 
 }
+
+void APZ_CodingCharacter::TickActor(float DeltaTime, ELevelTick TickType, FActorTickFunction& ThisTickFunction)
+{
+	Super::TickActor(DeltaTime, TickType, ThisTickFunction);
+	NoiseEmitter->MakeNoise(this, 1, GetActorLocation());
+
+}
+
 void APZ_CodingCharacter::GetLifetimeReplicatedProps(TArray <FLifetimeProperty> & OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
