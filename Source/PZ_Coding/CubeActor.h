@@ -14,10 +14,10 @@ class PZ_CODING_API ACubeActor : public AActor
 public:	
 	// Sets default values for this actor's properties
 	ACubeActor();
-
+	
 	UPROPERTY(BlueprintReadWrite)
 		int32 Life;
-
+   
 	UFUNCTION(BlueprintCallable)
 		void SetLife(int32 CurrentLife);
 
