@@ -14,6 +14,7 @@
 #include "InventoryInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "InventoryComponent.h"
+#include "MySaveGame.h"
 #include "ThrowingWeapon.h"
 #include "Components/PawnNoiseEmitterComponent.h"
 
@@ -56,6 +57,59 @@ APZ_CodingCharacter::APZ_CodingCharacter()
 	APZ_CodingCharacter::Inventory();
 
 }
+void APZ_CodingCharacter::SaveGameFunc()
+{
+	if(UMySaveGame* SaveGameInstance = Cast<UMySaveGame> (UGameplayStatics::CreateSaveGameObject(UMySaveGame::StaticClass())))
+	{
+		FAsyncSaveGameToSlotDelegate SavedDelegate;
+		SavedDelegate.BindUObject(this, &APZ_CodingCharacter::SaveGameMssg);
+		SaveGameInstance->PlayerHealth = GetMaxHealth();
+		SaveGameInstance->PlayerPosition = GetActorLocation();
+		UGameplayStatics::AsyncSaveGameToSlot(SaveGameInstance, TEXT("PlayerData"),0,SavedDelegate);
+
+
+	}
+}
+void APZ_CodingCharacter::LoadGameFunc()
+{
+	FAsyncLoadGameFromSlotDelegate LoadedDelegate;
+	LoadedDelegate.BindUObject(this, &APZ_CodingCharacter::LoadGameMssg);
+	UGameplayStatics::AsyncLoadGameFromSlot(TEXT("PlayerData"), 0, LoadedDelegate);
+	
+}
+void APZ_CodingCharacter::SaveGameMssg(const FString &Section, const int32 Index, bool bResult)
+{
+	if(bResult)
+	{
+		GEngine->AddOnScreenDebugMessage(-1,5.f, FColor::Blue, FString::Printf(TEXT("Game has been saved")));
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("Save error occured")));
+	}
+}
+void APZ_CodingCharacter::LoadGameMssg(const FString& SlotName, const int32 UserIndex, USaveGame* LoadedGameData)
+{
+	UMySaveGame* Data= Cast<UMySaveGame>(LoadedGameData);
+	if(Data)
+	{
+		MaxHealth = Data->PlayerHealth;
+		ServerPlayerLocation(Data->PlayerPosition);
+		GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Blue, FString::Printf(TEXT("Game has been loaded")) );
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("Downloading error occured")) );
+	}
+}
+
+void APZ_CodingCharacter::ServerPlayerLocation_Implementation(const FVector& NewLocation)
+{
+	SetActorLocation(NewLocation);
+}
+
+
+
 bool APZ_CodingCharacter::CheckIsAndroid()
 {
 #if PLATFORM_ANDROID
@@ -180,7 +234,8 @@ void APZ_CodingCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 	PlayerInputComponent->BindAction("DropDownWeapon", IE_Pressed, this, &APZ_CodingCharacter::OnDropWeapon);
 	PlayerInputComponent->BindAction("DropItem", IE_Pressed, this, &APZ_CodingCharacter::DropItem);
 	PlayerInputComponent->BindAction("UseItem", IE_Pressed, this, &APZ_CodingCharacter::UseItem);
-
+    PlayerInputComponent->BindAction("SaveGameFunc", IE_Pressed,this, &APZ_CodingCharacter::SaveGameFunc);
+	PlayerInputComponent->BindAction("LoadGameFunc", IE_Pressed, this, &APZ_CodingCharacter::LoadGameFunc);
 }
 
 void APZ_CodingCharacter::TickActor(float DeltaTime, ELevelTick TickType, FActorTickFunction& ThisTickFunction)
