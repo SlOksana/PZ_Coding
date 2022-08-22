@@ -1,72 +1,133 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
-
 #pragma once
-
 #include "CoreMinimal.h"
+
 #include "GameFramework/Character.h"
+#include "InventoryInterface.h"
+#include "WeaponInterface.h"
+#include "MySaveGame.h"
 #include "PZ_CodingCharacter.generated.h"
 
 UCLASS(config=Game)
-class APZ_CodingCharacter : public ACharacter
+class APZ_CodingCharacter : public ACharacter, public IInventoryInterface
 {
 	GENERATED_BODY()
 
-	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
 
-	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess="true"))
+	class UWeaponManagerComponent* WeaponManagerComp;
+
+
 public:
 	APZ_CodingCharacter();
 
-	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite)
+	USceneComponent* SceneComp;
+
+	UPROPERTY(Category="Character", VisibleAnywhere, BlueprintReadWrite, meta=(AllowPublicAccess = "true"))
+	UInventoryComponent* InventoryComp;
+
+	UPROPERTY(Category=Character, VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
+	UPawnNoiseEmitterComponent* NoiseEmitter;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 MaxHealth;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+	int32 CurrentHealth;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 Damage;
+
+	UWeaponManagerComponent* GetWeaponManagerComponent() const
+	{
+		return WeaponManagerComp;
+	}
+
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseTurnRate;
 
-	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseLookUpRate;
 
+	UPROPERTY(EditDefaultsOnly)
+	UAnimMontage* AnimMontageClimb;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	bool CheckIsAndroid();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool IsClimbing;
+
+	UFUNCTION(BlueprintPure, Category="Health")
+	FORCEINLINE float GetMaxHealth() const { return MaxHealth; }
+
+	// UFUNCTION(BlueprintCallable)
+	//void ForwardHeightTrace();
+
+	//  UFUNCTION(Server, Unreliable)
+	//void ServerForwardHeightTrace();
+	UFUNCTION()
+	void SaveGameFunc();
+	UFUNCTION()
+	void LoadGameFunc();
+	UFUNCTION()
+	void SaveGameMssg(const FString& Section, const int32 Index, bool bResult);
+	UFUNCTION()
+	void LoadGameMssg(const FString& SlotName, const int32 UserIndex, USaveGame* LoadedGameData);
+
+	UFUNCTION(Server, Reliable)
+	void ServerPlayerLocation(const FVector& NewLocation);
+	UFUNCTION()
+	void DropItem();
+	UFUNCTION()
+	void UseItem();
+	void GetItem(ANewInventoryItem* NewItem);
+
+
+	UFUNCTION(BlueprintCallable)
+	void ApplyDamage();
+
+
+	UFUNCTION(BlueprintCallable)
+	void AddHealth(int32 Value);
+
+	UFUNCTION(Client, Unreliable)
+	void AddHealthClient(float NewValue);
+
+	UFUNCTION(Server, Unreliable)
+	void AddHealthServer(float NewValue);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastClimbAnim();
+
+	UFUNCTION(BlueprintCallable)
+	void OnSetWeapon(class ABaseWeapon* NewWeapon = nullptr);
+
+	//virtual  UInventoryComponent* GetInventory() override;
+	virtual void Inventory() override;
+	virtual void Tick(float DeltaTime) override;
+
 protected:
-
-	/** Resets HMD orientation in VR. */
+	void OnDropWeapon();
 	void OnResetVR();
-
-	/** Called for forwards/backward input */
+	UFUNCTION(NetMulticast, Reliable)
+	void RespawnCharacter();
 	void MoveForward(float Value);
-
-	/** Called for side to side input */
 	void MoveRight(float Value);
-
-	/** 
-	 * Called via input to turn at a given rate. 
-	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
-	 */
 	void TurnAtRate(float Rate);
-
-	/**
-	 * Called via input to turn look up/down at a given rate. 
-	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
-	 */
 	void LookUpAtRate(float Rate);
-
-	/** Handler for when a touch input begins. */
 	void TouchStarted(ETouchIndex::Type FingerIndex, FVector Location);
-
-	/** Handler for when a touch input stops. */
 	void TouchStopped(ETouchIndex::Type FingerIndex, FVector Location);
 
 protected:
-	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	// End of APawn interface
-
+	virtual void TickActor(float DeltaTime, ELevelTick TickType, FActorTickFunction& ThisTickFunction) override;
 public:
-	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 };
-
