@@ -1,6 +1,6 @@
 #include "MainPlayerState.h"
-#include "InventoryActor.h"
-void AMainPlayerState::AddItem(AInventoryActor* NewInventoryActor)
+//#include "InventoryActor.h"
+/*void AMainPlayerState::AddItem(AInventoryActor* NewInventoryActor)
 {
 	InventoryActors.Add(NewInventoryActor);
 	NewInventoryActor->SetActorEnableCollision(false);
@@ -14,4 +14,4 @@ void AMainPlayerState::PopItem()
 	NewInventoryActor->SetActorEnableCollision(true);
 
 }
-
+*/
